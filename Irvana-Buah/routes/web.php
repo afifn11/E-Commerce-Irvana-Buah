@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductWebController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,6 +37,9 @@ Route::middleware(['auth'])->group(function () {
     });
     // kategori routes (CRUD)
     Route::resource('users', UserController::class);
+
+    //Routes untuk orders
+    Route::resource('orders', OrderController::class);
 });
 
 // Route bawaan Breeze (login, register, dll)

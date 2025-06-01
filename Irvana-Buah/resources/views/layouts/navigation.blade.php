@@ -72,6 +72,21 @@
                         @endif
                     </a>
 
+                    <!-- Orders Link - Updated Icon (Multiple People) -->
+                     <a href="{{ route('orders.index') }}" 
+                    class="group relative px-4 py-2 rounded-xl transition-all duration-300 {{ request()->routeIs('orders.*') ? 'bg-white/20 text-white' : '' }}"
+                    :class="scrolled ? 'hover:bg-gray-100 text-gray-700 hover:text-gray-900' : 'hover:bg-white/20 text-white/80 hover:text-white'">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m3 5.197V9a3 3 0 00-6 0v2.5"/>
+                            </svg>
+                            <span class="font-medium">{{ __('Pesanan') }}</span>
+                        </div>
+                        @if(request()->routeIs('orders.*'))
+                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
+                        @endif
+                    </a>
+
                     <!-- Users Link - Updated Icon (Multiple People) -->
                      <a href="{{ route('users.index') }}" 
                     class="group relative px-4 py-2 rounded-xl transition-all duration-300 {{ request()->routeIs('users.*') ? 'bg-white/20 text-white' : '' }}"
@@ -222,6 +237,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
                 <span class="font-medium">{{ __('Kategori') }}</span>
+            </a>
+
+            <!-- Mobile Categories Link - Updated Icon -->
+            <a href="{{ route('orders.index') }}" 
+               class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('orders.*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <span class="font-medium">{{ __('Pesanan') }}</span>
             </a>
 
             <!-- Mobile Users Link - Updated Icon -->
