@@ -40,6 +40,12 @@ Route::middleware(['auth'])->group(function () {
 
     //Routes untuk orders
     Route::resource('orders', OrderController::class);
+
+    // Dashboard routes
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/refresh', [DashboardController::class, 'refreshStats'])->name('dashboard.refresh');
+    Route::post('/dashboard/filter', [DashboardController::class, 'getDataByDateRange'])->name('dashboard.filter');
+    Route::get('/debug-dashboard', [DashboardController::class, 'debugDashboard']);
 });
 
 // Route bawaan Breeze (login, register, dll)

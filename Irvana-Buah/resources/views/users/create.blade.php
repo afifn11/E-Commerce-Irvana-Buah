@@ -144,30 +144,24 @@
                                 @enderror
                             </div>
 
-                            <!-- Role Field -->
+                            <!-- Password Confirmation Field -->
                             <div class="space-y-2">
-                                <label for="role" class="block text-sm font-semibold text-gray-700">
-                                    Peran <span class="text-red-500">*</span>
+                                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700">
+                                    Konfirmasi Password <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
-                                    <select name="role" id="role"
-                                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors @error('role') border-red-500 ring-red-500 @enderror"
-                                            required>
-                                        <option value="">-- Pilih Peran --</option>
-                                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
-                                            Administrator
-                                        </option>
-                                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>
-                                            Pengguna
-                                        </option>
-                                    </select>
+                                    <input type="password" name="password_confirmation" id="password_confirmation"
+                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors @error('password_confirmation') border-red-500 ring-red-500 @enderror"
+                                           placeholder="Masukkan ulang password"
+                                           required>
                                 </div>
-                                @error('role')
+                                <p class="text-xs text-gray-500">Masukkan password yang sama</p>
+                                @error('password_confirmation')
                                     <p class="text-sm text-red-600 flex items-center space-x-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -176,6 +170,39 @@
                                     </p>
                                 @enderror
                             </div>
+                        </div>
+
+                        <!-- Role Field -->
+                        <div class="space-y-2">
+                            <label for="role" class="block text-sm font-semibold text-gray-700">
+                                Peran <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <select name="role" id="role"
+                                        class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors @error('role') border-red-500 ring-red-500 @enderror"
+                                        required>
+                                    <option value="">-- Pilih Peran --</option>
+                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
+                                        Administrator
+                                    </option>
+                                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>
+                                        Pengguna
+                                    </option>
+                                </select>
+                            </div>
+                            @error('role')
+                                <p class="text-sm text-red-600 flex items-center space-x-1">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>{{ $message }}</span>
+                                </p>
+                            @enderror
                         </div>
 
                         <!-- Phone Number Field -->
@@ -249,6 +276,35 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Password Match Validation Script -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const password = document.getElementById('password');
+                    const confirmPassword = document.getElementById('password_confirmation');
+                    const submitButton = document.querySelector('button[type="submit"]');
+                    
+                    function validatePasswords() {
+                        if (password.value && confirmPassword.value) {
+                            if (password.value === confirmPassword.value) {
+                                confirmPassword.setCustomValidity('');
+                                confirmPassword.classList.remove('border-red-500', 'ring-red-500');
+                                confirmPassword.classList.add('border-green-500', 'ring-green-500');
+                            } else {
+                                confirmPassword.setCustomValidity('Password tidak cocok');
+                                confirmPassword.classList.remove('border-green-500', 'ring-green-500');
+                                confirmPassword.classList.add('border-red-500', 'ring-red-500');
+                            }
+                        } else {
+                            confirmPassword.setCustomValidity('');
+                            confirmPassword.classList.remove('border-red-500', 'ring-red-500', 'border-green-500', 'ring-green-500');
+                        }
+                    }
+                    
+                    password.addEventListener('input', validatePasswords);
+                    confirmPassword.addEventListener('input', validatePasswords);
+                });
+            </script>
         </div>
     </div>
 </x-app-layout>

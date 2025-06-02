@@ -45,17 +45,28 @@ class OrderController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', '%' . $search . '%')
-                  ->orWhereHas('user', function ($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', '%' . $search . '%')
-                               ->orWhere('email', 'like', '%' . $search . '%');
-                  });
+                ->orWhereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                });
             });
         }
 
+        // Get paginated orders
         $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Calculate statistics separately to avoid affecting pagination
+        $stats = [
+            'total_orders' => Order::count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
+            'processing_orders' => Order::where('status', 'processing')->count(),
+            'delivered_orders' => Order::where('status', 'delivered')->count(),
+            'total_revenue' => Order::where('payment_status', 'paid')->sum('total_amount'),
+        ];
+        
         $users = User::orderBy('name')->get();
 
-        return view('orders.index', compact('orders', 'users'));
+        return view('orders.index', compact('orders', 'users', 'stats'));
     }
 
     /**

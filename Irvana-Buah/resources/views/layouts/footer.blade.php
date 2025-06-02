@@ -65,6 +65,18 @@
                         @endif
                     </a>
 
+                    <!-- Orders Icon - Fixed (Multiple People Icon) -->
+                    <a href="{{ route('orders.index') }}" 
+                       class="group flex items-center space-x-3 text-white/80 hover:text-white transition-all duration-300 {{ request()->routeIs('orders.*') ? 'text-white' : '' }}">
+                        <svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"/>
+                        </svg>
+                        <span class="text-sm font-medium">Pesanan</span>
+                        @if(request()->routeIs('orders.*'))
+                        <div class="w-1 h-1 bg-white rounded-full"></div>
+                        @endif
+                    </a>
+
                     <!-- Users Icon - Fixed (Multiple People Icon) -->
                     <a href="{{ route('users.index') }}" 
                        class="group flex items-center space-x-3 text-white/80 hover:text-white transition-all duration-300 {{ request()->routeIs('users.*') ? 'text-white' : '' }}">
