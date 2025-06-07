@@ -161,7 +161,7 @@ class DashboardController extends Controller
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.status', '!=', 'cancelled')
-            ->where('orders.payment_status', 'paid') // Tambahkan kondisi ini
+            ->where('orders.payment_status', 'paid')
             ->select(
                 'categories.id',
                 'categories.name', 
