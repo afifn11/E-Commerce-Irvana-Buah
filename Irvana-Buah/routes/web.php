@@ -9,7 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 // Hanya user yang sudah login & terverifikasi bisa akses dashboard
