@@ -4,9 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>@yield('title', 'Index - eStore Bootstrap Template')</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>@yield('title', 'Irvana Buah - Toko Buah Segar Online')</title>
+  <meta name="description" content="@yield('meta_description', 'Irvana Buah - Toko buah segar berkualitas premium. Pesan online, pengiriman cepat ke seluruh kota.')">
+  <meta name="keywords" content="@yield('meta_keywords', 'buah segar, toko buah online, buah premium, irvana buah')">
 
   <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
   <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
@@ -23,23 +24,14 @@
   <link href="{{ asset('assets/vendor/drift-zoom/drift-basic.css') }}" rel="stylesheet">
 
   <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
-
-  {{-- =======================================================
-  * Template Name: eStore
-  * Template URL: https://bootstrapmade.com/estore-bootstrap-ecommerce-template/
-  * Updated: Apr 26 2025 with Bootstrap v5.3.5
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== --}}
+  @yield('styles')
 </head>
 
-<body class="index-page">
+<body class="@yield('body_class', 'index-page')">
 
   @include('home.partials.header')
 
-  <main class="main">
-    @yield('content')
-  </main>
+  @yield('content')
 
   @include('home.partials.footer')
 
@@ -47,6 +39,7 @@
 
   <div id="preloader"></div>
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
   <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
@@ -58,6 +51,7 @@
   <script src="{{ asset('assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
 
   <script src="{{ asset('assets/js/main.js') }}"></script>
+  @yield('scripts')
 
 </body>
 

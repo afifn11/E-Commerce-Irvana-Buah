@@ -106,6 +106,17 @@ class Product extends Model
         return $query->where('stock', '>', 0);
     }
 
+    // Scope for best seller products
+    public function scopeBestSeller($query, $limit = 10)
+    {
+        return $query->withCount('orderItems as total_sold')
+                    ->withSum('orderItems as total_quantity', 'quantity')
+                    ->having('total_sold', '>', 0)
+                    ->orderBy('total_sold', 'desc')
+                    ->orderBy('total_quantity', 'desc')
+                    ->limit($limit);
+    }
+
     // Get effective price (discount price if available, otherwise regular price)
     public function getEffectivePriceAttribute()
     {
@@ -125,5 +136,110 @@ class Product extends Model
             return round((($this->price - $this->discount_price) / $this->price) * 100);
         }
         return 0;
+    }
+
+    // Get total quantity sold
+    public function getTotalSoldAttribute()
+    {
+        return $this->orderItems()->sum('quantity');
+    }
+
+    // Get total revenue from this product
+    public function getTotalRevenueAttribute()
+    {
+        return $this->orderItems()->sum(\DB::raw('quantity * price'));
+    }
+
+    // Check if product is best seller
+    public function getIsBestSellerAttribute()
+    {
+        $totalSold = $this->total_sold;
+        if ($totalSold === 0) return false;
+        
+        // Consider a product as best seller if it sold more than average
+        $averageSales = Product::active()
+                              ->whereHas('orderItems')
+                              ->withCount('orderItems as sales_count')
+                              ->avg('sales_count');
+        
+        return $totalSold > $averageSales;
+    }
+
+    // Get sales rank
+    public function getSalesRankAttribute()
+    {
+        $higherSalesCount = Product::active()
+                                  ->withCount('orderItems as total_sold')
+                                  ->having('total_sold', '>', $this->total_sold)
+                                  ->count();
+        
+        return $higherSalesCount + 1;
+    }
+
+    // Get product rating based on reviews (if you have reviews system)
+    public function getAverageRatingAttribute()
+    {
+        // Assuming you have a reviews relationship
+        // return $this->reviews()->avg('rating') ?? 0;
+        
+        // For now, return a mock rating based on sales
+        $totalSold = $this->total_sold;
+        if ($totalSold > 50) return 5.0;
+        if ($totalSold > 30) return 4.5;
+        if ($totalSold > 15) return 4.0;
+        if ($totalSold > 5) return 3.5;
+        return 3.0;
+    }
+
+    // Get formatted price
+    public function getFormattedPriceAttribute()
+    {
+        return 'Rp ' . number_format($this->price, 0, ',', '.');
+    }
+
+    // Get formatted discount price
+    public function getFormattedDiscountPriceAttribute()
+    {
+        return $this->discount_price ? 'Rp ' . number_format($this->discount_price, 0, ',', '.') : null;
+    }
+
+    // Get formatted effective price
+    public function getFormattedEffectivePriceAttribute()
+    {
+        return 'Rp ' . number_format($this->effective_price, 0, ',', '.');
+    }
+
+    // Check if product is new (created within last 7 days)
+    public function getIsNewAttribute()
+    {
+        return $this->created_at->diffInDays(now()) <= 7;
+    }
+
+    // Check if stock is low
+    public function getIsLowStockAttribute()
+    {
+        return $this->stock <= 5 && $this->stock > 0;
+    }
+
+    // Get stock status
+    public function getStockStatusAttribute()
+    {
+        if ($this->stock <= 0) return 'out_of_stock';
+        if ($this->stock <= 5) return 'low_stock';
+        return 'in_stock';
+    }
+
+    // Get stock status label
+    public function getStockStatusLabelAttribute()
+    {
+        switch ($this->stock_status) {
+            case 'out_of_stock':
+                return 'Stok Habis';
+            case 'low_stock':
+                return 'Stok Terbatas';
+            case 'in_stock':
+            default:
+                return 'Stok Tersedia';
+        }
     }
 }

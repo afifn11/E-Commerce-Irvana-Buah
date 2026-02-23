@@ -31,11 +31,11 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone_number' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
-            'role' => ['nullable', 'in:user,admin'],
+            // 'role' sengaja tidak divalidasi dari frontend untuk keamanan, defaultnya 'user'
         ]);
 
         $user = User::create([
@@ -44,13 +44,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
-            'role' => $request->role ?? 'user',
+            'role' => 'user', // NOTE: Semua registrasi dari publik adalah 'user'
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // CHANGE: Redirect ke halaman utama untuk user baru
+        return redirect(route('home'));
     }
 }

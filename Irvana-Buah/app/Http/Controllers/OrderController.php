@@ -25,6 +25,11 @@ class OrderController extends Controller
 
         $query = Order::with(['user', 'orderItems']);
 
+        // Jika bukan admin, hanya tampilkan order milik user sendiri
+        if (auth()->user()->role !== 'admin') {
+            $query->where('user_id', auth()->id());
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
