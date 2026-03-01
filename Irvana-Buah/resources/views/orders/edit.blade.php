@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('orders.index') }}"
+            <a href="{{ route('admin.orders.index') }}"
                class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                 <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -44,7 +44,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('orders.update', $order->id) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-6">
                         @csrf
                         @method('PUT')
 
@@ -247,11 +247,11 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
-                             <a href="{{ route('orders.show', $order->id) }}"
+                             <a href="{{ route('admin.orders.show', $order->id) }}"
                                class="w-full sm:w-auto text-center font-medium text-indigo-600 hover:text-indigo-800 transition-colors px-6 py-3 rounded-xl">
                                 Lihat Detail
                             </a>
-                            <a href="{{ route('orders.index') }}"
+                            <a href="{{ route('admin.orders.index') }}"
                                class="w-full sm:w-auto group flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">
                                <span class="font-medium">Batal</span>
                             </a>
@@ -273,7 +273,7 @@
             const status = this.value;
             if (status === 'cancelled') {
                 if (!confirm('Apakah Anda yakin ingin membatalkan order ini? Tindakan ini mungkin tidak dapat diurungkan.')) {
-                    this.value = '{{ $order->status }}'; // Revert to original status
+                    this.value = '{{ $order->status instanceof \BackedEnum ? $order->status->value : $order->status }}'; // Revert to original status
                 }
             }
         });
@@ -282,7 +282,7 @@
             const paymentStatus = this.value;
             if (paymentStatus === 'refunded') {
                 if (!confirm('Apakah Anda yakin ingin mengubah status pembayaran menjadi "Refunded"? Pastikan proses refund telah selesai.')) {
-                    this.value = '{{ $order->payment_status }}'; // Revert to original status
+                    this.value = '{{ $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status }}'; // Revert to original status
                 }
             }
         });

@@ -5,7 +5,7 @@
                 <p class="breadcrumb"><a href="{{ route('dashboard') }}">Dashboard</a><span class="breadcrumb-sep">/</span><span>Pesanan</span></p>
                 <h2 class="page-title">Manajemen Pesanan</h2>
             </div>
-            <a href="{{ route('orders.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.orders.index') }}" class="btn btn-primary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 Tambah Pesanan
             </a>
@@ -76,34 +76,34 @@
                                     <p style="font-size:0.75rem;color:var(--text-muted)">{{ $order->user->email ?? '' }}</p>
                                 </td>
                                 <td>
-                                    @switch($order->status)
+                                    @switch($order->status instanceof \BackedEnum ? $order->status->value : $order->status)
                                         @case('pending') <span class="badge badge-yellow"><span class="badge-dot"></span>Pending</span> @break
                                         @case('processing') <span class="badge badge-blue"><span class="badge-dot"></span>Diproses</span> @break
                                         @case('shipped') <span class="badge badge-purple"><span class="badge-dot"></span>Dikirim</span> @break
                                         @case('delivered') <span class="badge badge-green"><span class="badge-dot"></span>Selesai</span> @break
                                         @case('cancelled') <span class="badge badge-red"><span class="badge-dot"></span>Batal</span> @break
-                                        @default <span class="badge badge-gray">{{ $order->status }}</span>
+                                        @default <span class="badge badge-gray">{{ $order->status instanceof \BackedEnum ? $order->status->value : $order->status }}</span>
                                     @endswitch
                                 </td>
                                 <td>
-                                    @switch($order->payment_status)
+                                    @switch($order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status)
                                         @case('paid') <span class="badge badge-green">Lunas</span> @break
                                         @case('pending') <span class="badge badge-yellow">Menunggu</span> @break
                                         @case('failed') <span class="badge badge-red">Gagal</span> @break
-                                        @default <span class="badge badge-gray">{{ $order->payment_status }}</span>
+                                        @default <span class="badge badge-gray">{{ $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status }}</span>
                                     @endswitch
                                 </td>
                                 <td style="font-size:0.84rem;font-weight:600;color:var(--text-primary)">Rp{{ number_format($order->total_amount) }}</td>
                                 <td style="font-size:0.8rem;color:var(--text-muted)">{{ $order->created_at->format('d M Y') }}</td>
                                 <td>
                                     <div class="table-actions" style="justify-content:center;">
-                                        <a href="{{ route('orders.show', $order) }}" class="table-action-btn view" title="Detail">
+                                        <a href="{{ route('admin.orders.show', $order) }}" class="table-action-btn view" title="Detail">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </a>
-                                        <a href="{{ route('orders.edit', $order) }}" class="table-action-btn edit" title="Edit">
+                                        <a href="{{ route('admin.orders.edit', $order) }}" class="table-action-btn edit" title="Edit">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </a>
-                                        <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline">
+                                        <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline">
                                             @csrf @method('DELETE')
                                             <button type="button" class="table-action-btn delete" title="Hapus"
                                                 x-on:click="showDeleteModal = true; itemToDelete = $event.target.closest('form'); itemName = '{{ $order->order_number }}'">

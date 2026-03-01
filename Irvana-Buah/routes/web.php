@@ -1,107 +1,111 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductWebController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\Customer;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\CustomerOrderController;
-use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
-// ==========================================
-// PUBLIC ROUTES - Frontend Customer
-// ==========================================
+// ====================================================
+// PUBLIC ROUTES — Storefront
+// ====================================================
 
-// Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Shop / Produk
-Route::get('/shop', [HomeController::class, 'products'])->name('products');
-Route::get('/product/{slug}', [HomeController::class, 'productDetail'])->name('product.detail');
-Route::get('/category/{slug}', [HomeController::class, 'productsByCategory'])->name('products.by.category');
+// Shop
+Route::get('/shop',              [HomeController::class, 'products'])->name('products');
+Route::get('/product/{slug}',    [HomeController::class, 'productDetail'])->name('product.detail');
+Route::get('/category/{slug}',   [HomeController::class, 'productsByCategory'])->name('products.by.category');
 
-// Halaman Statis
-Route::get('/about', [HomeController::class, 'about'])->name('about');
+// Static pages
+Route::get('/about',   [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'sendContactMessage'])->name('contact.send');
 
-// Produk Diskon & Best Seller
+// Promotions
 Route::get('/discount-products', [HomeController::class, 'discountProducts'])->name('discount.products');
-Route::get('/best-sellers', [HomeController::class, 'bestSellerProducts'])->name('best-sellers');
+Route::get('/best-sellers',      [HomeController::class, 'bestSellerProducts'])->name('best-sellers');
 
-// AJAX / API Routes
-Route::get('/search-products', [HomeController::class, 'searchProducts'])->name('search.products');
-Route::get('/api/discount-stats', [HomeController::class, 'getDiscountStats'])->name('api.discount.stats');
-Route::get('/api/trending-discounts', [HomeController::class, 'getTrendingDiscounts'])->name('api.trending.discounts');
-Route::get('/api/best-sellers', [HomeController::class, 'getBestSellerProducts'])->name('api.best-sellers');
+// AJAX / JSON endpoints
+Route::get('/search-products',          [HomeController::class, 'searchProducts'])->name('search.products');
+Route::get('/api/discount-stats',        [HomeController::class, 'getDiscountStatsJson'])->name('api.discount.stats');
+Route::get('/api/trending-discounts',    [HomeController::class, 'getTrendingDiscounts'])->name('api.trending.discounts');
+Route::get('/api/best-sellers',          [HomeController::class, 'getBestSellerProductsJson'])->name('api.best-sellers');
 
-// ==========================================
-// CART ROUTES - Semua user bisa akses halaman, tapi operasi butuh auth
-// ==========================================
+// ====================================================
+// CART ROUTES
+// ====================================================
+
 Route::prefix('cart')->name('cart.')->group(function () {
-    Route::get('/', [CartController::class, 'index'])->name('index');
-    Route::post('/add', [CartController::class, 'store'])->name('store');
-    Route::put('/{id}', [CartController::class, 'update'])->name('update');
-    Route::delete('/{id}', [CartController::class, 'destroy'])->name('destroy');
-    Route::post('/clear', [CartController::class, 'clear'])->name('clear');
-    Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
-    Route::get('/count', [CartController::class, 'getCount'])->name('count');
+    Route::get('/',            [Customer\CartController::class, 'index'])->name('index');
+    Route::post('/add',        [Customer\CartController::class, 'store'])->name('store');
+    Route::put('/{id}',        [Customer\CartController::class, 'update'])->name('update');
+    Route::delete('/{id}',     [Customer\CartController::class, 'destroy'])->name('destroy');
+    Route::post('/clear',      [Customer\CartController::class, 'clear'])->name('clear');
+    Route::get('/checkout',    [Customer\CartController::class, 'checkout'])->name('checkout');
+    Route::get('/count',       [Customer\CartController::class, 'getCount'])->name('count');
 });
 
-// Proses Checkout (butuh auth)
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->middleware('auth')->name('checkout.process');
-Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->middleware('auth')->name('checkout.success');
+// ====================================================
+// CHECKOUT (requires auth)
+// ====================================================
 
-// ==========================================
-// AUTHENTICATED ROUTES
-// ==========================================
-Route::get('/dashboard', [DashboardController::class, 'index'])
+Route::middleware('auth')->group(function () {
+    Route::post('/checkout/process',        [Customer\CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success/{order}', [Customer\CheckoutController::class, 'success'])->name('checkout.success');
+});
+
+// ====================================================
+// AUTHENTICATED — Dashboard (admin)
+// ====================================================
+
+Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard/refresh', [Admin\DashboardController::class, 'refreshStats'])->name('dashboard.refresh');
+    Route::post('/dashboard/filter', [Admin\DashboardController::class, 'getDataByDateRange'])->name('dashboard.filter');
 
-    // Admin: Products CRUD
-    Route::resource('/products', ProductWebController::class);
-    
-    // Admin: Categories CRUD
-    Route::resource('categories', CategoryController::class);
-    Route::post('categories/validate-image-url', [CategoryController::class, 'validateImageUrl'])
+    // Resources
+    Route::resource('products',  Admin\ProductController::class);
+    Route::resource('categories', Admin\CategoryController::class);
+    Route::resource('users',     Admin\UserController::class);
+    Route::resource('orders',    Admin\OrderController::class)->except(['create', 'store']);
+
+    // Category image validation
+    Route::post('categories/validate-image-url', [Admin\CategoryController::class, 'validateImageUrl'])
         ->name('categories.validate-image-url');
 
-    // Admin: Users CRUD
-    Route::resource('users', UserController::class);
-
-    // Orders - admin semua, user lihat milik sendiri
-    Route::resource('orders', OrderController::class);
-
-    // Dashboard routes
-    Route::get('/dashboard/refresh', [DashboardController::class, 'refreshStats'])->name('dashboard.refresh');
-    Route::post('/dashboard/filter', [DashboardController::class, 'getDataByDateRange'])->name('dashboard.filter');
+    // Order status AJAX
+    Route::patch('orders/{order}/status',         [Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::patch('orders/{order}/payment-status', [Admin\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
 });
 
-// ==========================================
-// CUSTOMER ROUTES - Halaman khusus user biasa (bukan admin)
-// ==========================================
-Route::middleware(['auth'])->group(function () {
-    // Pesanan customer
-    Route::get('/my-orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
-    Route::get('/my-orders/{id}', [CustomerOrderController::class, 'show'])->name('customer.orders.show');
+// ====================================================
+// CUSTOMER ROUTES
+// ====================================================
 
-    // Profil customer
-    Route::get('/my-profile', [CustomerProfileController::class, 'edit'])->name('customer.profile');
-    Route::patch('/my-profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
-    Route::patch('/my-profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
+Route::middleware('auth')->group(function () {
+    // My Orders
+    Route::get('/my-orders',      [Customer\OrderController::class, 'index'])->name('customer.orders');
+    Route::get('/my-orders/{id}', [Customer\OrderController::class, 'show'])->name('customer.orders.show');
+
+    // My Profile
+    Route::get('/my-profile',             [Customer\ProfileController::class, 'edit'])->name('customer.profile');
+    Route::patch('/my-profile',           [Customer\ProfileController::class, 'update'])->name('customer.profile.update');
+    Route::patch('/my-profile/password',  [Customer\ProfileController::class, 'updatePassword'])->name('customer.profile.password');
 });
 
-// Auth routes (login, register, dll)
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+// ====================================================
+// PROFILE ROUTES (Breeze-compatible)
+// ====================================================
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});

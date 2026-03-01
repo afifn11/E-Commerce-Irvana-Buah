@@ -209,7 +209,7 @@
                               <i class="bi bi-arrow-repeat"></i>
                             </button>
                             <button type="button" class="quick-action-btn quick-view-btn" 
-                                    data-product-id="{{ $product->id }}" title="Lihat Detail">
+                                    data-product-slug="{{ $product->slug }}" title="Lihat Detail">
                               <i class="bi bi-eye"></i>
                             </button>
                           </div>
@@ -472,9 +472,9 @@ $(document).ready(function() {
 
     // Quick view functionality
     $('.quick-view-btn').on('click', function() {
-        let productId = $(this).data('product-id');
+        let productSlug = $(this).data('product-slug');
         // Redirect to product detail page
-        window.location.href = '/product/' + productId;
+        window.location.href = '/product/' + productSlug;
     });
 
     // Initialize price range display

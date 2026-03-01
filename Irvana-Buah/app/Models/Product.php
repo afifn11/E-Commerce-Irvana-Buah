@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -23,223 +26,142 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price'          => 'decimal:2',
         'discount_price' => 'decimal:2',
-        'is_featured' => 'boolean',
-        'is_active' => 'boolean',
+        'is_featured'    => 'boolean',
+        'is_active'      => 'boolean',
+        'stock'          => 'integer',
     ];
 
-    // Relationships
-    public function category()
+    // ---- Relationships ----
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function orderItems()
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function cartItems()
+    public function cartItems(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
 
-    // Accessor for image URL - PERBAIKAN UTAMA
-    public function getImageUrlAttribute()
-    {
-        if ($this->image) {
-            // Check if it's already a URL (starts with http/https)
-            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-                return $this->image;
-            }
-            
-            // If it's a file path, return the storage URL
-            // Pastikan path tidak dimulai dengan slash ganda
-            $imagePath = ltrim($this->image, '/');
-            return asset('storage/' . $imagePath);
-        }
-        
-        // Return default image if no image is set
-        return asset('images/default-product.png');
-    }
+    // ---- Scopes ----
 
-    // Method untuk mendapatkan full path gambar
-    public function getFullImagePathAttribute()
-    {
-        if ($this->image) {
-            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-                return $this->image;
-            }
-            return storage_path('app/public/' . $this->image);
-        }
-        return null;
-    }
-
-    // Method untuk mengecek apakah gambar ada
-    public function hasImage()
-    {
-        if (!$this->image) return false;
-        
-        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return true; // Assume URL images exist
-        }
-        
-        return file_exists(storage_path('app/public/' . $this->image));
-    }
-
-    // Scope for active products
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    // Scope for featured products
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
     }
 
-    // Scope for products in stock
     public function scopeInStock($query)
     {
         return $query->where('stock', '>', 0);
     }
 
-    // Scope for best seller products
-    public function scopeBestSeller($query, $limit = 10)
+    public function scopeBestSeller($query, int $limit = 10)
     {
-        return $query->withCount('orderItems as total_sold')
-                    ->withSum('orderItems as total_quantity', 'quantity')
-                    ->having('total_sold', '>', 0)
-                    ->orderBy('total_sold', 'desc')
-                    ->orderBy('total_quantity', 'desc')
-                    ->limit($limit);
+        return $query
+            ->withCount('orderItems as total_sold')
+            ->withSum('orderItems as total_quantity', 'quantity')
+            ->having('total_sold', '>', 0)
+            ->orderByDesc('total_sold')
+            ->limit($limit);
     }
 
-    // Get effective price (discount price if available, otherwise regular price)
-    public function getEffectivePriceAttribute()
-    {
-        return $this->discount_price ?? $this->price;
-    }
+    // ---- Accessors ----
 
-    // Check if product has discount
-    public function getHasDiscountAttribute()
+    public function getImageUrlAttribute(): string
     {
-        return !is_null($this->discount_price) && $this->discount_price < $this->price;
-    }
-
-    // Get discount percentage
-    public function getDiscountPercentageAttribute()
-    {
-        if ($this->has_discount) {
-            return round((($this->price - $this->discount_price) / $this->price) * 100);
+        if (! $this->image) {
+            return asset('images/default-product.png');
         }
-        return 0;
+
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        return Storage::disk('public')->exists($this->image)
+            ? Storage::url($this->image)
+            : asset('images/default-product.png');
     }
 
-    // Get total quantity sold
-    public function getTotalSoldAttribute()
+    public function getEffectivePriceAttribute(): float
     {
-        return $this->orderItems()->sum('quantity');
+        return (float) ($this->discount_price ?? $this->price);
     }
 
-    // Get total revenue from this product
-    public function getTotalRevenueAttribute()
+    public function getHasDiscountAttribute(): bool
     {
-        return $this->orderItems()->sum(\DB::raw('quantity * price'));
+        return ! is_null($this->discount_price) && $this->discount_price < $this->price;
     }
 
-    // Check if product is best seller
-    public function getIsBestSellerAttribute()
+    public function getDiscountPercentageAttribute(): int
     {
-        $totalSold = $this->total_sold;
-        if ($totalSold === 0) return false;
-        
-        // Consider a product as best seller if it sold more than average
-        $averageSales = Product::active()
-                              ->whereHas('orderItems')
-                              ->withCount('orderItems as sales_count')
-                              ->avg('sales_count');
-        
-        return $totalSold > $averageSales;
+        if (! $this->has_discount) {
+            return 0;
+        }
+
+        return (int) round((($this->price - $this->discount_price) / $this->price) * 100);
     }
 
-    // Get sales rank
-    public function getSalesRankAttribute()
+    public function getFormattedPriceAttribute(): string
     {
-        $higherSalesCount = Product::active()
-                                  ->withCount('orderItems as total_sold')
-                                  ->having('total_sold', '>', $this->total_sold)
-                                  ->count();
-        
-        return $higherSalesCount + 1;
+        return 'Rp ' . number_format((float) $this->price, 0, ',', '.');
     }
 
-    // Get product rating based on reviews (if you have reviews system)
-    public function getAverageRatingAttribute()
+    public function getFormattedDiscountPriceAttribute(): ?string
     {
-        // Assuming you have a reviews relationship
-        // return $this->reviews()->avg('rating') ?? 0;
-        
-        // For now, return a mock rating based on sales
-        $totalSold = $this->total_sold;
-        if ($totalSold > 50) return 5.0;
-        if ($totalSold > 30) return 4.5;
-        if ($totalSold > 15) return 4.0;
-        if ($totalSold > 5) return 3.5;
-        return 3.0;
+        return $this->discount_price
+            ? 'Rp ' . number_format((float) $this->discount_price, 0, ',', '.')
+            : null;
     }
 
-    // Get formatted price
-    public function getFormattedPriceAttribute()
-    {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
-    }
-
-    // Get formatted discount price
-    public function getFormattedDiscountPriceAttribute()
-    {
-        return $this->discount_price ? 'Rp ' . number_format($this->discount_price, 0, ',', '.') : null;
-    }
-
-    // Get formatted effective price
-    public function getFormattedEffectivePriceAttribute()
+    public function getFormattedEffectivePriceAttribute(): string
     {
         return 'Rp ' . number_format($this->effective_price, 0, ',', '.');
     }
 
-    // Check if product is new (created within last 7 days)
-    public function getIsNewAttribute()
+    public function getIsNewAttribute(): bool
     {
         return $this->created_at->diffInDays(now()) <= 7;
     }
 
-    // Check if stock is low
-    public function getIsLowStockAttribute()
+    public function getIsLowStockAttribute(): bool
     {
         return $this->stock <= 5 && $this->stock > 0;
     }
 
-    // Get stock status
-    public function getStockStatusAttribute()
+    public function getStockStatusAttribute(): string
     {
         if ($this->stock <= 0) return 'out_of_stock';
         if ($this->stock <= 5) return 'low_stock';
         return 'in_stock';
     }
 
-    // Get stock status label
-    public function getStockStatusLabelAttribute()
+    public function getStockStatusLabelAttribute(): string
     {
-        switch ($this->stock_status) {
-            case 'out_of_stock':
-                return 'Stok Habis';
-            case 'low_stock':
-                return 'Stok Terbatas';
-            case 'in_stock':
-            default:
-                return 'Stok Tersedia';
-        }
+        return match($this->stock_status) {
+            'out_of_stock' => 'Stok Habis',
+            'low_stock'    => 'Stok Terbatas',
+            default        => 'Stok Tersedia',
+        };
+    }
+
+    // ---- Helpers ----
+
+    public function hasImage(): bool
+    {
+        if (! $this->image) return false;
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) return true;
+        return Storage::disk('public')->exists($this->image);
     }
 }

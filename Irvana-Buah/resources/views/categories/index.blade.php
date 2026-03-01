@@ -5,7 +5,7 @@
                 <p class="breadcrumb"><a href="{{ route('dashboard') }}">Dashboard</a><span class="breadcrumb-sep">/</span><span>Kategori</span></p>
                 <h2 class="page-title">Manajemen Kategori</h2>
             </div>
-            <a href="{{ route('categories.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 Tambah Kategori
             </a>
@@ -55,7 +55,7 @@
                         <div class="empty-state-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg></div>
                         <p class="empty-state-title">Belum ada kategori</p>
                         <p class="empty-state-text">Tambahkan kategori untuk mengorganisir produk</p>
-                        <a href="{{ route('categories.create') }}" class="btn btn-primary btn-sm" style="margin-top:1rem;">Tambah Kategori</a>
+                        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-sm" style="margin-top:1rem;">Tambah Kategori</a>
                     </div>
                 @else
                     <table class="table-glass">
@@ -78,13 +78,13 @@
                                 <td style="font-size:0.8rem;color:var(--text-muted)">{{ $category->created_at->format('d M Y') }}</td>
                                 <td>
                                     <div class="table-actions" style="justify-content:center;">
-                                        <a href="{{ route('categories.show', $category) }}" class="table-action-btn view" title="Detail">
+                                        <a href="{{ route('admin.categories.show', $category) }}" class="table-action-btn view" title="Detail">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </a>
-                                        <a href="{{ route('categories.edit', $category) }}" class="table-action-btn edit" title="Edit">
+                                        <a href="{{ route('admin.categories.edit', $category) }}" class="table-action-btn edit" title="Edit">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </a>
-                                        <form action="{{ route('categories.destroy', $category) }}" method="POST" class="inline">
+                                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline">
                                             @csrf @method('DELETE')
                                             <button type="button" class="table-action-btn delete" title="Hapus"
                                                 x-on:click="showDeleteModal = true; itemToDelete = $event.target.closest('form'); itemName = '{{ $category->name }}'">

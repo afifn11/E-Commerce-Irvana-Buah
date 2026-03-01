@@ -14,9 +14,9 @@
             <div style="display:flex;align-items:center;gap:0.375rem;">
                 <a href="{{ route('dashboard') }}" style="font-size:0.75rem;color:var(--text-muted);" class="{{ request()->routeIs('dashboard') ? '' : '' }}">Dashboard</a>
                 <span style="color:var(--glass-border);">·</span>
-                <a href="{{ route('products.index') }}" style="font-size:0.75rem;color:var(--text-muted);">Produk</a>
+                <a href="{{ route('admin.products.index') }}" style="font-size:0.75rem;color:var(--text-muted);">Produk</a>
                 <span style="color:var(--glass-border);">·</span>
-                <a href="{{ route('orders.index') }}" style="font-size:0.75rem;color:var(--text-muted);">Pesanan</a>
+                <a href="{{ route('admin.orders.index') }}" style="font-size:0.75rem;color:var(--text-muted);">Pesanan</a>
             </div>
         </div>
     </div>

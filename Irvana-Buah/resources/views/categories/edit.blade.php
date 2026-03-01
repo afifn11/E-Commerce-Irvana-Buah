@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('categories.index') }}" 
+            <a href="{{ route('admin.categories.index') }}" 
                class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                 <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -59,7 +59,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('categories.update', $category->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
                         @method('PUT')
 
@@ -146,7 +146,9 @@
                             </div>
 
                             {{-- Upload File Tab --}}
-                            <div id="upload-content" class="tab-content">
+                            <!-- Hidden input untuk image_type -->
+                        <input type="hidden" name="image_type" id="image_type" value="file">
+                        <div id="upload-content" class="tab-content">
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,7 +226,7 @@
 
                         <!-- Form Actions -->
                         <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
-                            <a href="{{ route('categories.index') }}"
+                            <a href="{{ route('admin.categories.index') }}"
                                class="w-full sm:w-auto group flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">
                                 <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -270,6 +272,7 @@
                         // Clear URL input and validation
                         imageUrlInput.value = '';
                         urlValidationResult.innerHTML = '';
+                        document.getElementById('image_type').value = 'file';
                     }
 
                     // Function to switch to URL tab
@@ -286,6 +289,7 @@
                         
                         // Clear file input
                         imageInput.value = '';
+                        document.getElementById('image_type').value = 'url';
                     }
 
                     // Event listeners for tabs

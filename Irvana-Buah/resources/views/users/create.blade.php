@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-4">
-            <a href="{{ route('users.index') }}" 
+            <a href="{{ route('admin.users.index') }}" 
                class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                 <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -59,7 +59,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-6">
                         @csrf
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -258,7 +258,7 @@
 
                         <!-- Form Actions -->
                         <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
-                            <a href="{{ route('users.index') }}"
+                            <a href="{{ route('admin.users.index') }}"
                                class="w-full sm:w-auto group flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">
                                 <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

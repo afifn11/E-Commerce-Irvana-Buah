@@ -106,7 +106,7 @@
                 <a href="{{ route('home') }}" class="btn btn-primary">
                   <i class="bi bi-house me-1"></i> Kembali ke Beranda
                 </a>
-                <a href="{{ route('orders.index') }}" class="btn btn-outline-primary">
+                <a href="{{ route('customer.orders') }}" class="btn btn-outline-primary">
                   <i class="bi bi-bag-check me-1"></i> Lihat Pesanan Saya
                 </a>
               </div>

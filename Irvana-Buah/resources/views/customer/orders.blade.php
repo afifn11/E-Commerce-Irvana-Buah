@@ -45,10 +45,12 @@
               'delivered'  => ['class' => 'bg-success text-white', 'icon' => 'bi-check-circle-fill', 'label' => 'Selesai'],
               'cancelled'  => ['class' => 'bg-danger text-white',  'icon' => 'bi-x-circle-fill',    'label' => 'Dibatalkan'],
             ];
-            $s        = $statusMap[$order->status] ?? ['class'=>'bg-secondary text-white','icon'=>'bi-question','label'=>ucfirst($order->status)];
-            $paid     = $order->payment_status === 'paid';
-            $payLabel = $paid ? 'Lunas' : ($order->payment_status === 'pending' ? 'Belum Bayar' : 'Gagal');
-            $payClass = $paid ? 'bg-success text-white' : ($order->payment_status === 'pending' ? 'bg-warning text-dark' : 'bg-danger text-white');
+            $statusVal = $order->status instanceof \BackedEnum ? $order->status->value : (string) $order->status;
+            $s        = $statusMap[$statusVal] ?? ["class"=>"bg-secondary text-white","icon"=>"bi-question","label"=>ucfirst($statusVal)];
+            $payVal    = $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : (string) $order->payment_status;
+            $paid     = $payVal === 'paid';
+            $payLabel = $paid ? 'Lunas' : ($payVal === 'pending' ? 'Belum Bayar' : 'Gagal');
+            $payClass = $paid ? 'bg-success text-white' : ($payVal === 'pending' ? 'bg-warning text-dark' : 'bg-danger text-white');
           @endphp
           <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header bg-white border-bottom py-3 px-4">

@@ -32,11 +32,14 @@
           'delivered'  => ['class' => 'bg-success text-white', 'icon' => 'bi-check-circle-fill', 'label' => 'Selesai'],
           'cancelled'  => ['class' => 'bg-danger text-white',  'icon' => 'bi-x-circle-fill',    'label' => 'Dibatalkan'],
         ];
-        $s        = $statusMap[$order->status] ?? ['class'=>'bg-secondary text-white','icon'=>'bi-question','label'=>ucfirst($order->status)];
-        $paid     = $order->payment_status === 'paid';
-        $payLabel = $paid ? 'Lunas' : ($order->payment_status === 'pending' ? 'Belum Bayar' : 'Gagal');
-        $payClass = $paid ? 'bg-success text-white' : ($order->payment_status === 'pending' ? 'bg-warning text-dark' : 'bg-danger text-white');
+        $statusVal = $order->status instanceof \BackedEnum ? $order->status->value : (string) $order->status;
+        $s        = $statusMap[$statusVal] ?? ['class'=>'bg-secondary text-white','icon'=>'bi-question','label'=>ucfirst($statusVal)];
+        $payVal    = $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : (string) $order->payment_status;
+        $paid     = $payVal === 'paid';
+        $payLabel = $paid ? 'Lunas' : ($payVal === 'pending' ? 'Belum Bayar' : 'Gagal');
+        $payClass = $paid ? 'bg-success text-white' : ($payVal === 'pending' ? 'bg-warning text-dark' : 'bg-danger text-white');
         $methodMap = ['bank_transfer' => 'Transfer Bank', 'e_wallet' => 'E-Wallet', 'cash' => 'COD (Bayar di Tempat)'];
+        $methodVal = $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : (string) $order->payment_method;
       @endphp
 
       <div class="row g-4">
@@ -131,9 +134,9 @@
               </div>
               <div class="d-flex justify-content-between mb-3">
                 <span class="text-muted">Metode</span>
-                <span class="fw-semibold">{{ $methodMap[$order->payment_method] ?? $order->payment_method }}</span>
+                <span class="fw-semibold">{{ $methodMap[$methodVal] ?? $methodVal }}</span>
               </div>
-              @if($order->payment_method === 'bank_transfer' && !$paid)
+              @if($methodVal === 'bank_transfer' && !$paid)
               <div class="alert alert-warning rounded-3 small mt-3 mb-0">
                 <i class="bi bi-info-circle me-1"></i>
                 Silakan transfer ke:<br>
@@ -141,14 +144,14 @@
                 <strong>Mandiri</strong> 0987654321 a/n Irvana Buah<br>
                 Sebesar <strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong>
               </div>
-              @elseif($order->payment_method === 'e_wallet' && !$paid)
+              @elseif($methodVal === 'e_wallet' && !$paid)
               <div class="alert alert-info rounded-3 small mt-3 mb-0">
                 <i class="bi bi-phone me-1"></i>
                 Kirim ke nomor:<br>
                 <strong>GoPay / OVO:</strong> 0812-3456-7890<br>
                 Sebesar <strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong>
               </div>
-              @elseif($order->payment_method === 'cash')
+              @elseif($methodVal === 'cash')
               <div class="alert alert-secondary rounded-3 small mt-3 mb-0">
                 <i class="bi bi-cash me-1"></i>Bayar langsung saat pesanan tiba.
               </div>

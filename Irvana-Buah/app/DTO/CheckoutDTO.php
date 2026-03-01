@@ -1,0 +1,29 @@
+<?php
+
+namespace App\DTO;
+
+use App\Http\Requests\Customer\ProcessCheckoutRequest;
+
+readonly class CheckoutDTO
+{
+    public function __construct(
+        public string  $name,
+        public string  $email,
+        public string  $phone,
+        public string  $address,
+        public string  $paymentMethod,
+        public ?string $notes,
+    ) {}
+
+    public static function fromRequest(ProcessCheckoutRequest $request): self
+    {
+        return new self(
+            name:          $request->validated('name'),
+            email:         $request->validated('email'),
+            phone:         $request->validated('phone'),
+            address:       $request->validated('address'),
+            paymentMethod: $request->validated('payment_method'),
+            notes:         $request->validated('notes'),
+        );
+    }
+}

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
 {
@@ -16,52 +18,32 @@ class Category extends Model
         'description',
     ];
 
-    public function products()
+    // ---- Relationships ----
+
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
 
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
+    // ---- Accessors ----
 
-    // Accessor untuk mendapatkan URL gambar lengkap
-    public function getImageUrlAttribute()
+    public function getImageUrlAttribute(): ?string
     {
-        if ($this->image) {
-            // Jika image adalah URL eksternal (dimulai dengan http/https)
-            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-                return $this->image;
-            }
-            // Jika image adalah file lokal
-            return asset('storage/' . $this->image);
+        if (! $this->image) return null;
+
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
         }
-        return null;
+
+        return Storage::disk('public')->exists($this->image)
+            ? Storage::url($this->image)
+            : null;
     }
 
-    // Accessor untuk cek apakah gambar adalah URL eksternal
-    public function getIsExternalImageAttribute()
-    {
-        return $this->image && filter_var($this->image, FILTER_VALIDATE_URL);
-    }
+    // ---- Scopes ----
 
-    // Accessor untuk mendapatkan nama file gambar saja
-    public function getImageNameAttribute()
+    public function scopeWithActiveProductCount($query)
     {
-        if ($this->image) {
-            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-                return basename(parse_url($this->image, PHP_URL_PATH));
-            }
-            return basename($this->image);
-        }
-        return null;
-    }
-
-    // Scope untuk pencarian
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+        return $query->withCount(['products' => fn ($q) => $q->active()->inStock()]);
     }
 }

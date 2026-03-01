@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderItem extends Model
 {
@@ -16,13 +17,37 @@ class OrderItem extends Model
         'price',
     ];
 
-    public function order()
+    protected $casts = [
+        'quantity' => 'integer',
+        'price'    => 'decimal:2',
+    ];
+
+    // ---- Relationships ----
+
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // ---- Accessors ----
+
+    public function getSubtotalAttribute(): float
+    {
+        return $this->quantity * (float) $this->price;
+    }
+
+    public function getFormattedSubtotalAttribute(): string
+    {
+        return 'Rp ' . number_format($this->subtotal, 0, ',', '.');
+    }
+
+    public function getFormattedPriceAttribute(): string
+    {
+        return 'Rp ' . number_format((float) $this->price, 0, ',', '.');
     }
 }

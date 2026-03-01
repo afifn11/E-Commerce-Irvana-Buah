@@ -45,8 +45,8 @@
                 <li><a href="{{ route('cart.index') }}">Keranjang Belanja</a></li>
                 <li><a href="{{ route('cart.checkout') }}">Checkout</a></li>
                 @auth
-                  <li><a href="{{ route('orders.index') }}">Status Pesanan</a></li>
-                  <li><a href="{{ route('profile.edit') }}">Profil Saya</a></li>
+                  <li><a href="{{ route('customer.orders') }}">Status Pesanan</a></li>
+                  <li><a href="{{ route('customer.profile') }}">Profil Saya</a></li>
                 @else
                   <li><a href="{{ route('login') }}">Masuk / Daftar</a></li>
                 @endauth

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('products.index') }}" 
+                <a href="{{ route('admin.products.index') }}" 
                    class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                     <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -208,7 +208,7 @@
             <!-- Action Buttons -->
             <div class="bg-white shadow-xl rounded-2xl p-6">
                 <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                    <a href="{{ route('products.index') }}"
+                    <a href="{{ route('admin.products.index') }}"
                        class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                         <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -217,7 +217,7 @@
                     </a>
                     
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('products.edit', $product->id) }}"
+                        <a href="{{ route('admin.products.edit', $product->id) }}"
                            class="group flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 text-sm rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
                             <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -226,7 +226,7 @@
                         </a>
                         
                         <!-- Form Delete dengan hidden untuk modal -->
-                        <form id="delete-product-form" action="{{ route('products.destroy', $product->id) }}"
+                        <form id="delete-product-form" action="{{ route('admin.products.destroy', $product->id) }}"
                               method="POST" class="inline" style="display: none;">
                             @csrf
                             @method('DELETE')

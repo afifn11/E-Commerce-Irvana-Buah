@@ -127,7 +127,7 @@
                         </div>
                         <div class="revenue-item">
                             <p class="revenue-label">Minggu Ini</p>
-                            <p class="revenue-val">@money($revenueBulanIni)</p>
+                            <p class="revenue-val">@money($revenueMingguIni)</p>
                         </div>
                         <div class="revenue-item">
                             <p class="revenue-label">Bulan Ini</p>
@@ -208,25 +208,25 @@
                             <h4 class="section-title">Aksi Cepat</h4>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <a href="{{ route('products.create') }}" class="quick-action-card">
+                            <a href="{{ route('admin.products.create') }}" class="quick-action-card">
                                 <svg style="width:1.5rem;height:1.5rem;margin-bottom:0.5rem;color:rgba(255,255,255,0.5)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                                 <span>Tambah Produk</span>
                             </a>
-                            <a href="{{ route('categories.index') }}" class="quick-action-card">
+                            <a href="{{ route('admin.categories.index') }}" class="quick-action-card">
                                 <svg style="width:1.5rem;height:1.5rem;margin-bottom:0.5rem;color:rgba(255,255,255,0.5)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                 </svg>
                                 <span>Kelola Kategori</span>
                             </a>
-                            <a href="{{ route('orders.index') }}" class="quick-action-card">
+                            <a href="{{ route('admin.orders.index') }}" class="quick-action-card">
                                 <svg style="width:1.5rem;height:1.5rem;margin-bottom:0.5rem;color:rgba(255,255,255,0.5)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                 </svg>
                                 <span>Lihat Pesanan</span>
                             </a>
-                            <a href="{{ route('users.index') }}" class="quick-action-card">
+                            <a href="{{ route('admin.users.index') }}" class="quick-action-card">
                                 <svg style="width:1.5rem;height:1.5rem;margin-bottom:0.5rem;color:rgba(255,255,255,0.5)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
@@ -289,7 +289,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <a href="{{ route('products.index') }}" class="view-all-link">Lihat Semua Produk →</a>
+                        <a href="{{ route('admin.products.index') }}" class="view-all-link">Lihat Semua Produk →</a>
                     </div>
                 </div>
 
@@ -320,7 +320,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <a href="{{ route('orders.index') }}" class="view-all-link">Lihat Semua Pesanan →</a>
+                        <a href="{{ route('admin.orders.index') }}" class="view-all-link">Lihat Semua Pesanan →</a>
                     </div>
                 </div>
             </div>
@@ -402,7 +402,7 @@
     @push('scripts')
     <script>
         document.getElementById('refreshStats').addEventListener('click', function() {
-            fetch('{{ route("dashboard.refresh") }}')
+            fetch('{{ route("admin.dashboard.refresh") }}')
                 .then(r => r.json())
                 .then(data => {
                     if(data.success) {
@@ -417,7 +417,7 @@
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             if(!startDate || !endDate) { alert('Silakan pilih tanggal awal dan akhir'); return; }
-            fetch('{{ route("dashboard.filter") }}', {
+            fetch('{{ route("admin.dashboard.filter") }}', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                 body: JSON.stringify({ start_date: startDate, end_date: endDate })
