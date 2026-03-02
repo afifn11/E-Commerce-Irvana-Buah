@@ -99,27 +99,92 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Update quantity
+
+    // ── Update quantity ──────────────────────────────────────
     document.querySelectorAll('.quantity-input').forEach(function(input) {
         let timeout;
         input.addEventListener('change', function() {
             clearTimeout(timeout);
-            const id = this.dataset.id;
-            const quantity = this.value;
+            const id       = this.dataset.id;
+            const quantity = parseInt(this.value) || 1;
             timeout = setTimeout(() => updateCart(id, quantity), 500);
         });
     });
 
-    // Remove item
+    // ── Remove item with custom confirm toast ────────────────
     document.querySelectorAll('.remove-item').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            if(confirm('Hapus produk dari keranjang?')) {
-                removeFromCart(id);
-            }
+            const id   = this.dataset.id;
+            const row  = document.querySelector(`.cart-item[data-id="${id}"]`);
+            const name = row ? row.querySelector('.product-title')?.textContent?.trim() : 'produk ini';
+            showDeleteConfirm(name, () => removeFromCart(id));
         });
     });
 
+    // ── Custom delete confirm dialog ─────────────────────────
+    function showDeleteConfirm(productName, onConfirm) {
+        // Remove existing
+        document.getElementById('irvana-confirm')?.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'irvana-confirm';
+        modal.innerHTML = `
+          <div id="irvana-confirm-backdrop" style="
+            position:fixed;inset:0;background:rgba(0,0,0,0.45);
+            z-index:9999;display:flex;align-items:center;justify-content:center;
+            animation:fadeIn .2s ease;
+          ">
+            <div style="
+              background:#fff;border-radius:16px;padding:28px 28px 22px;
+              max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);
+              animation:slideUp .25s ease;text-align:center;
+            ">
+              <div style="width:56px;height:56px;background:#FEE2E2;border-radius:50%;
+                display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-trash3" style="font-size:1.5rem;color:#ef4444;"></i>
+              </div>
+              <h5 style="margin:0 0 8px;font-weight:700;color:#111;">Hapus dari Keranjang?</h5>
+              <p style="color:#666;font-size:0.9rem;margin:0 0 22px;">
+                <strong>${productName}</strong> akan dihapus dari keranjang belanja Anda.
+              </p>
+              <div style="display:flex;gap:10px;justify-content:center;">
+                <button id="irvana-cancel-btn" style="
+                  flex:1;padding:10px;border-radius:10px;border:1.5px solid #ddd;
+                  background:#fff;font-weight:600;cursor:pointer;font-size:0.9rem;
+                ">Batal</button>
+                <button id="irvana-confirm-btn" style="
+                  flex:1;padding:10px;border-radius:10px;border:none;
+                  background:#ef4444;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;
+                ">Hapus</button>
+              </div>
+            </div>
+          </div>`;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('irvana-cancel-btn').onclick  = () => modal.remove();
+        document.getElementById('irvana-confirm-btn').onclick = () => { modal.remove(); onConfirm(); };
+        document.getElementById('irvana-confirm-backdrop').onclick = (e) => {
+            if(e.target === e.currentTarget) modal.remove();
+        };
+    }
+
+    // ── Toast notification ───────────────────────────────────
+    function showToast(msg, type = 'success') {
+        const el = document.createElement('div');
+        el.style.cssText = `
+          position:fixed;top:20px;right:20px;z-index:10000;
+          padding:12px 20px;border-radius:10px;font-weight:600;font-size:0.9rem;
+          background:${type==='success'?'#22c55e':'#ef4444'};color:#fff;
+          box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:slideIn .3s ease;
+          display:flex;align-items:center;gap:8px;
+        `;
+        el.innerHTML = `<i class="bi bi-${type==='success'?'check-circle-fill':'exclamation-circle-fill'}"></i> ${msg}`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+
+    // ── Update cart item ─────────────────────────────────────
     function updateCart(id, quantity) {
         fetch(`/cart/${id}`, {
             method: 'PUT',
@@ -127,45 +192,101 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
             },
-            body: JSON.stringify({ quantity: quantity })
+            body: JSON.stringify({ quantity })
         })
         .then(r => r.json())
         .then(data => {
-            if(data.success) {
-                document.getElementById('cart-total-price').textContent = data.formatted_total_price;
-                updateItemTotal(id, quantity);
+            if (data.success) {
+                // Update subtotal
+                const totalEl = document.getElementById('cart-total-price');
+                if (totalEl) totalEl.textContent = data.formatted_total_price;
+
+                // Update item total (row-level)
+                const row = document.querySelector(`.cart-item[data-id="${id}"]`);
+                if (row) {
+                    const priceRaw = row.querySelector('.current-price')?.textContent?.replace(/[^0-9]/g,'') || 0;
+                    const itemTotalEl = row.querySelector('.item-total span');
+                    if (itemTotalEl) {
+                        const total = parseInt(priceRaw) * quantity;
+                        itemTotalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+                    }
+                }
+
+                // Update badge
+                const badge = document.getElementById('cart-badge');
+                if (badge && data.cart_count !== undefined) badge.textContent = data.cart_count;
             } else {
-                alert(data.message);
+                showToast(data.message || 'Gagal memperbarui', 'error');
             }
-        });
+        })
+        .catch(() => showToast('Terjadi kesalahan', 'error'));
     }
 
-    function updateItemTotal(id, quantity) {
-        const row = document.querySelector(`.cart-item[data-id="${id}"]`);
-        if(row) {
-            const price = parseFloat(row.querySelector('.current-price').textContent.replace(/[^0-9]/g,''));
-            // Reload to recalculate (simpler approach)
-            location.reload();
-        }
-    }
-
+    // ── Remove cart item ─────────────────────────────────────
     function removeFromCart(id) {
+        const row = document.querySelector(`.cart-item[data-id="${id}"]`);
+        if (row) {
+            row.style.transition = 'opacity .3s, transform .3s';
+            row.style.opacity    = '0';
+            row.style.transform  = 'translateX(30px)';
+        }
+
         fetch(`/cart/${id}`, {
             method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-            }
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content }
         })
         .then(r => r.json())
         .then(data => {
-            if(data.success) {
-                document.querySelector(`.cart-item[data-id="${id}"]`).remove();
-                document.getElementById('cart-total-price').textContent = data.formatted_total_price;
-                document.getElementById('cart-badge').textContent = data.cart_count;
-                if(data.cart_count == 0) location.reload();
+            if (data.success) {
+                setTimeout(() => row?.remove(), 300);
+
+                // Update subtotal live
+                const totalEl = document.getElementById('cart-total-price');
+                if (totalEl) totalEl.textContent = data.formatted_total_price;
+
+                // Update badge
+                const badge = document.getElementById('cart-badge');
+                if (badge) badge.textContent = data.cart_count;
+
+                showToast('Produk berhasil dihapus dari keranjang');
+
+                // If cart empty → hide summary, show empty state
+                if (data.cart_count == 0) {
+                    setTimeout(() => {
+                        const cartItemsEl = document.querySelector('.cart-items');
+                        if (cartItemsEl) {
+                            cartItemsEl.innerHTML = `
+                              <div class="text-center py-5">
+                                <div style="font-size:4rem;color:#ddd;margin-bottom:1rem;">🛒</div>
+                                <h4 style="color:#555;">Keranjang Anda kosong</h4>
+                                <p class="text-muted">Yuk tambahkan produk ke keranjang!</p>
+                                <a href="{{ route('products') }}" class="btn btn-primary mt-2">Mulai Belanja</a>
+                              </div>`;
+                        }
+                        // Hide summary column
+                        const summaryEl = document.querySelector('.cart-summary');
+                        if (summaryEl) summaryEl.closest('.col-lg-4').style.display = 'none';
+
+                        // Hide header row
+                        const headerEl = document.querySelector('.cart-header');
+                        if (headerEl) headerEl.style.display = 'none';
+                    }, 350);
+                }
+            } else {
+                if (row) { row.style.opacity = '1'; row.style.transform = ''; }
+                showToast(data.message || 'Gagal menghapus', 'error');
             }
+        })
+        .catch(() => {
+            if (row) { row.style.opacity = '1'; row.style.transform = ''; }
+            showToast('Terjadi kesalahan', 'error');
         });
     }
 });
 </script>
+<style>
+@keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp { from { transform:translateY(20px);opacity:0 } to { transform:translateY(0);opacity:1 } }
+@keyframes slideIn { from { transform:translateX(30px);opacity:0 } to { transform:translateX(0);opacity:1 } }
+</style>
 @endsection

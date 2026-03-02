@@ -1,13 +1,21 @@
-<div class="{{ $colClass ?? 'col-12 col-sm-6 col-lg-4 col-xl-3' }} product-item">
+<div class="{{ $colClass ?? 'col-6 col-sm-6 col-lg-4 col-xl-3' }} product-item">
     <div class="irvana-product-box">
         <div class="irvana-product-thumb">
-            {{-- Labels --}}
-            @if($product->stock <= 0)
-                <span class="irvana-label irvana-label-sold">Habis</span>
-            @elseif($product->has_discount)
-                <span class="irvana-label irvana-label-sale">-{{ $product->discount_percentage }}%</span>
-            @elseif($product->is_new)
-                <span class="irvana-label irvana-label-new">Baru</span>
+
+            {{-- Left-side labels stack (Habis / Baru) --}}
+            @if($product->stock <= 0 || $product->is_new)
+            <div class="irvana-labels-stack">
+                @if($product->stock <= 0)
+                    <span class="irvana-label irvana-label-sold">Habis</span>
+                @elseif($product->is_new)
+                    <span class="irvana-label irvana-label-new">Baru</span>
+                @endif
+            </div>
+            @endif
+
+            {{-- Right-side: discount % --}}
+            @if($product->has_discount)
+                <span class="irvana-label-sale-topright">-{{ $product->discount_percentage }}%</span>
             @endif
 
             <img src="{{ $product->image_url }}"
@@ -16,6 +24,7 @@
                  loading="lazy"
                  onerror="this.src='{{ asset('assets/img/product/product-1.webp') }}'">
 
+            {{-- Desktop hover overlay --}}
             <div class="irvana-overlay">
                 <div class="irvana-quick-actions">
                     <button type="button" class="irvana-action-btn" title="Wishlist">
@@ -54,7 +63,7 @@
                 </a>
             @endif
             <h3 class="irvana-product-title">
-                <a href="{{ route('product.detail', $product->slug) }}">{{ Str::limit($product->name, 40) }}</a>
+                <a href="{{ route('product.detail', $product->slug) }}">{{ Str::limit($product->name, 38) }}</a>
             </h3>
             <div class="irvana-product-price">
                 @if($product->has_discount)
@@ -74,5 +83,23 @@
                 @endif
             </div>
         </div>
+
+        {{-- Mobile always-visible cart button (replaces hover overlay on touch) --}}
+        @if($product->stock > 0)
+            @auth
+                <button type="button" class="irvana-mobile-cart btn-add-to-cart"
+                        data-product-id="{{ $product->id }}"
+                        data-product-name="{{ $product->name }}">
+                    <i class="bi bi-cart-plus me-1"></i>Tambah
+                </button>
+            @else
+                <a href="{{ route('login') }}" class="irvana-mobile-cart" style="text-decoration:none;display:none;">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                </a>
+            @endauth
+        @else
+            <button class="irvana-mobile-cart sold-out" disabled>Stok Habis</button>
+        @endif
+
     </div>
 </div>

@@ -766,13 +766,25 @@ document.head.appendChild(style);
         let activeCategorySlug = null;
 
         function renderCard(p) {
-            const labelHtml = p.stock <= 0
-                ? `<span class="irvana-label irvana-label-sold">Habis</span>`
-                : p.has_discount
-                    ? `<span class="irvana-label irvana-label-sale">-${p.discount_percentage}%</span>`
-                    : p.is_new
-                        ? `<span class="irvana-label irvana-label-new">Baru</span>`
-                        : '';
+            // Left stack (status)
+            let leftLabel = '';
+            if (p.stock <= 0)   leftLabel = `<span class="irvana-label irvana-label-sold">Habis</span>`;
+            else if (p.is_new)  leftLabel = `<span class="irvana-label irvana-label-new">Baru</span>`;
+            const leftStack  = leftLabel ? `<div class="irvana-labels-stack">${leftLabel}</div>` : '';
+            // Right badge (discount)
+            const rightBadge = p.has_discount ? `<span class="irvana-label-sale-topright">-${p.discount_percentage}%</span>` : '';
+            const labelHtml  = leftStack + rightBadge;
+
+            // Mobile cart button
+            const mobileCart = p.stock > 0
+                ? (IS_AUTH
+                    ? `<button type="button" class="irvana-mobile-cart btn-add-to-cart"
+                               data-product-id="${p.id}" data-product-name="${p.name}">
+                           <i class="bi bi-cart-plus me-1"></i>Tambah
+                       </button>`
+                    : `<a href="${LOGIN_URL}" class="irvana-mobile-cart" style="display:none;">
+                           <i class="bi bi-box-arrow-in-right me-1"></i>Login</a>`)
+                : `<button class="irvana-mobile-cart sold-out" disabled>Stok Habis</button>`;
 
             const priceHtml = p.has_discount
                 ? `<span class="irvana-price-sale">${p.formatted_discount_price}</span>
@@ -825,7 +837,9 @@ document.head.appendChild(style);
                         <div class="irvana-stock-status">${stockHtml}</div>
                     </div>
                 </div>
-            </div>`;
+            </div>
+            ${mobileCart}
+        </div>`;
         }
 
         function loadProducts(categoryId) {

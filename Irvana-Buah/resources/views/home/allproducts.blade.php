@@ -184,90 +184,12 @@
           <!-- Daftar Produk -->
           <section id="category-product-list" class="category-product-list section">
             <div class="container" data-aos="fade-up" data-aos-delay="100">
-              <div class="row gy-4" id="products-container">
+              <div class="row g-3 gy-4" id="products-container">
                 @forelse($products as $product)
-                  <div class="col-12 col-sm-6 col-lg-4 col-xl-4 product-item">
-                    <div class="product-box">
-                      <div class="product-thumb">
-                        <div class="product-labels-wrap">
-                          @if($product->stock <= 0)
-                            <span class="product-label product-label-sold">Habis</span>
-                          @elseif($product->is_new)
-                            <span class="product-label">Baru</span>
-                          @endif
-                          @if($product->has_discount)
-                            <span class="product-label product-label-sale">-{{ $product->discount_percentage }}%</span>
-                          @endif
-                        </div>
-                        
-                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="main-img" loading="lazy">
-                        
-                        <div class="product-overlay">
-                          <div class="product-quick-actions">
-                            <button type="button" class="quick-action-btn" title="Tambahkan ke Wishlist">
-                              <i class="bi bi-heart"></i>
-                            </button>
-                            <button type="button" class="quick-action-btn" title="Bandingkan">
-                              <i class="bi bi-arrow-repeat"></i>
-                            </button>
-                            <button type="button" class="quick-action-btn quick-view-btn" 
-                                    data-product-slug="{{ $product->slug }}" title="Lihat Detail">
-                              <i class="bi bi-eye"></i>
-                            </button>
-                          </div>
-                          <div class="add-to-cart-container">
-                            @if($product->stock > 0)
-                              <button type="button" class="add-to-cart-btn" data-product-id="{{ $product->id }}">
-                                <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
-                              </button>
-                            @else
-                              <button type="button" class="add-to-cart-btn disabled" disabled>
-                                Stok Habis
-                              </button>
-                            @endif
-                          </div>
-                        </div>
-                      </div>
-                      <div class="product-content">
-                        <div class="product-details">
-                          <h3 class="product-title">
-                            <a href="{{ route('product.detail', $product->slug) }}">{{ $product->name }}</a>
-                          </h3>
-                          <div class="product-price">
-                            @if($product->has_discount)
-                              <span class="original">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                              <span class="sale">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
-                            @else
-                              <span>Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                            @endif
-                          </div>
-                        </div>
-                        <div class="product-rating-container">
-                          <div class="rating-stars">
-                            @for($i = 1; $i <= 5; $i++)
-                              @if($i <= floor($product->average_rating))
-                                <i class="bi bi-star-fill"></i>
-                              @elseif($i == ceil($product->average_rating) && $product->average_rating - floor($product->average_rating) >= 0.5)
-                                <i class="bi bi-star-half"></i>
-                              @else
-                                <i class="bi bi-star"></i>
-                              @endif
-                            @endfor
-                          </div>
-                          <span class="rating-number">{{ number_format($product->average_rating, 1) }}</span>
-                        </div>
-                        <div class="product-stock-status">
-                          @if($product->stock <= 0)
-                            <span class="text-danger">Stok habis</span>
-                          @elseif($product->stock <= 5)
-                            <span class="text-warning">Stok terbatas ({{ $product->stock }})</span>
-                          @else
-                            <span class="text-success">Stok tersedia</span>
-                          @endif
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  @include('home.partials.product-card', [
+                      'product'  => $product,
+                      'colClass' => 'col-6 col-sm-6 col-lg-4 col-xl-4',
+                  ])
                 @empty
                   <div class="col-12">
                     <div class="text-center py-5">
@@ -416,16 +338,23 @@ $(document).ready(function() {
     $('.view-btn').on('click', function() {
         $('.view-btn').removeClass('active');
         $(this).addClass('active');
-        
+
         let viewType = $(this).data('view');
         let container = $('#products-container');
-        
+
         if (viewType === 'list') {
-            container.removeClass('row gy-4').addClass('list-view');
-            $('.product-item').removeClass('col-6 col-md-4 col-lg-4 col-xl-3').addClass('col-12');
+            container.addClass('irvana-list-view');
+            // Each card col → full width
+            container.find('.product-item').each(function() {
+                $(this).attr('data-grid-class', $(this).attr('class'));
+                $(this).removeClass().addClass('col-12 product-item irvana-list-item');
+            });
         } else {
-            container.removeClass('list-view').addClass('row gy-4');
-            $('.product-item').removeClass('col-12').addClass('col-6 col-md-4 col-lg-4 col-xl-3');
+            container.removeClass('irvana-list-view');
+            container.find('.product-item').each(function() {
+                const saved = $(this).data('grid-class') || 'col-6 col-sm-6 col-lg-4 col-xl-4 product-item';
+                $(this).attr('class', saved);
+            });
         }
     });
 

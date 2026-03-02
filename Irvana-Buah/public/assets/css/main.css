@@ -12930,3 +12930,223 @@ section,
 @media (max-width: 767px) {
   .widgets-container { transition: all 0.3s ease; }
 }
+
+/* ====================================================
+   IRVANA LIST VIEW — toggle view for allproducts
+   ==================================================== */
+
+#products-container.irvana-list-view {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#products-container.irvana-list-view .irvana-list-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+}
+
+#products-container.irvana-list-view .irvana-product-box {
+  display: flex;
+  flex-direction: row;
+  border-radius: 12px;
+  height: auto !important;
+  overflow: hidden;
+}
+
+#products-container.irvana-list-view .irvana-product-thumb {
+  width: 180px;
+  min-width: 180px;
+  padding-bottom: 0 !important;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+#products-container.irvana-list-view .irvana-main-img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#products-container.irvana-list-view .irvana-product-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+}
+
+#products-container.irvana-list-view .irvana-product-title {
+  height: auto;
+  font-size: 1rem;
+  -webkit-line-clamp: 2;
+}
+
+#products-container.irvana-list-view .irvana-overlay {
+  display: none; /* hide hover overlay in list mode */
+}
+
+/* In list mode, show cart button in content area */
+#products-container.irvana-list-view .irvana-list-cart-btn {
+  display: inline-flex;
+}
+
+@media (max-width: 575px) {
+  #products-container.irvana-list-view .irvana-product-thumb {
+    width: 110px;
+    min-width: 110px;
+    height: 110px;
+  }
+  #products-container.irvana-list-view .irvana-product-content {
+    padding: 0.75rem;
+  }
+  #products-container.irvana-list-view .irvana-product-title {
+    font-size: 0.88rem;
+  }
+}
+
+/* ====================================================
+   MOBILE — 2 columns like Shopee/Lazada
+   ==================================================== */
+
+/* Product card partial defaults: col-6 on all mobile sizes */
+@media (max-width: 575px) {
+  /* Force 2 cols on mobile for ALL shop pages */
+  .product-item {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  /* Compact card for mobile 2-col */
+  .irvana-product-box {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+
+  .irvana-product-thumb {
+    padding-bottom: 100%; /* keep square */
+  }
+
+  .irvana-product-content {
+    padding: 8px 9px 10px;
+  }
+
+  .irvana-category-tag {
+    font-size: 0.65rem;
+    margin-bottom: 2px;
+  }
+
+  .irvana-product-title {
+    font-size: 0.8rem;
+    height: 2.3rem;
+    margin-bottom: 5px;
+  }
+
+  .irvana-price-sale,
+  .irvana-price-normal {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .irvana-price-original {
+    font-size: 0.7rem;
+  }
+
+  .irvana-stock-status {
+    font-size: 0.68rem;
+  }
+
+  /* Row gap tighter on mobile */
+  .row.g-3.gy-4,
+  .row.g-3 {
+    --bs-gutter-x: 10px;
+    --bs-gutter-y: 10px;
+  }
+
+  /* Overlay: make it always slightly visible on mobile (no hover) */
+  .irvana-overlay {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* Add quick cart button below image on mobile (always visible) */
+  .irvana-mobile-cart {
+    display: block !important;
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0 0 10px 10px;
+    background: var(--accent-color);
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    transition: background .2s;
+  }
+
+  .irvana-mobile-cart:hover { background: color-mix(in srgb, var(--accent-color), #000 12%); }
+  .irvana-mobile-cart.sold-out { background: #a0aec0; cursor: not-allowed; }
+}
+
+@media (min-width: 576px) {
+  .irvana-mobile-cart { display: none !important; }
+}
+
+/* ====================================================
+   LABEL FIX — irvana-label stacking (never overlap)
+   ==================================================== */
+
+/* Labels container: column stack, no overlap possible */
+.irvana-labels-stack {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+/* Override any single absolute irvana-label inside stack */
+.irvana-labels-stack .irvana-label {
+  position: static;
+  display: inline-block;
+}
+
+/* Sale badge always top-right */
+.irvana-label-sale-topright {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.28em 0.65em;
+  border-radius: 30px;
+  background: #e53e3e;
+  color: #fff;
+  pointer-events: none;
+}
+
+@media (max-width: 575px) {
+  .irvana-label { font-size: 0.62rem; padding: 0.22em 0.6em; }
+  .irvana-label-sale-topright { font-size: 0.62rem; padding: 0.22em 0.55em; top: 7px; right: 7px; }
+  .irvana-labels-stack { top: 7px; left: 7px; gap: 3px; }
+}
+
+/* ====================================================
+   VIEW TOGGLE ACTIVE STATE — ensure active is visible
+   ==================================================== */
+.view-options .view-btn {
+  transition: all .25s ease;
+}
+.view-options .view-btn.active {
+  background-color: var(--accent-color) !important;
+  color: #fff !important;
+  border-color: var(--accent-color) !important;
+}
+

@@ -100,7 +100,7 @@
             @else
               <div class="row g-3 gy-4">
                 @foreach($products as $product)
-                  @include('home.partials.product-card', ['product' => $product, 'colClass' => 'col-12 col-sm-6 col-lg-4'])
+                  @include('home.partials.product-card', ['product' => $product, 'colClass' => 'col-6 col-sm-6 col-lg-4'])
                 @endforeach
               </div>
               @if($products->hasPages())
