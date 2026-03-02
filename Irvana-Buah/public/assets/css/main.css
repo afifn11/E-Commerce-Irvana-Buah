@@ -12384,3 +12384,549 @@ section,
   color: color-mix(in srgb, var(--default-color), transparent 60%);
   font-size: 14px;
 }
+/* ====================================================
+   IRVANA PRODUCT CARD — shared across all shop pages
+   ==================================================== */
+
+.irvana-product-box {
+  position: relative;
+  height: 100%;
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform 0.4s cubic-bezier(0.165,0.84,0.44,1), box-shadow 0.4s ease;
+}
+
+.irvana-product-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+}
+
+/* ── Thumbnail (square aspect ratio) ── */
+.irvana-product-thumb {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 100%; /* 1:1 square — prevents layout shift regardless of image ratio */
+  background: #f5f5f5;
+}
+
+.irvana-main-img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.165,0.84,0.44,1);
+}
+
+.irvana-product-box:hover .irvana-main-img {
+  transform: scale(1.07);
+}
+
+/* ── Badges / Labels ── */
+.irvana-label {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 3;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3em 0.75em;
+  border-radius: 30px;
+  letter-spacing: 0.03em;
+  color: #fff;
+  line-height: 1;
+}
+.irvana-label-sale  { background: #e53e3e; }
+.irvana-label-new   { background: #38a169; }
+.irvana-label-sold  { background: #718096; }
+
+/* ── Hover Overlay ── */
+.irvana-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.35) 100%);
+}
+
+.irvana-product-box:hover .irvana-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Quick action buttons (heart / eye) */
+.irvana-quick-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.irvana-action-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--heading-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.irvana-action-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Add to cart button */
+.irvana-cart-area { width: 100%; }
+
+.irvana-cart-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.irvana-cart-btn:hover {
+  background: color-mix(in srgb, var(--accent-color), #000 15%);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.irvana-cart-disabled,
+.irvana-cart-disabled:hover {
+  background: #a0aec0;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Card Content ── */
+.irvana-product-content {
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.irvana-category-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.irvana-category-tag:hover { text-decoration: underline; }
+
+.irvana-product-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  line-height: 1.4;
+  height: 2.66rem; /* 2 lines max */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.irvana-product-title a {
+  color: var(--heading-color);
+  text-decoration: none;
+}
+
+.irvana-product-title a:hover { color: var(--accent-color); }
+
+.irvana-product-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+
+.irvana-price-normal,
+.irvana-price-sale {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--heading-color);
+}
+
+.irvana-price-sale { color: #e53e3e; }
+
+.irvana-price-original {
+  font-size: 0.82rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Stock status */
+.irvana-stock-status { font-size: 0.78rem; }
+.irvana-stock-ok   { color: #38a169; }
+.irvana-stock-low  { color: #d69e2e; }
+.irvana-stock-out  { color: #e53e3e; }
+
+/* ====================================================
+   PAGINATION FIX — match .category-pagination template
+   ==================================================== */
+
+.category-pagination nav ul,
+.category-pagination nav > ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0; margin: 0;
+  list-style: none;
+}
+
+.category-pagination nav li { margin: 0; }
+
+.category-pagination nav li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px; height: 40px;
+  padding: 8px 14px;
+  color: var(--default-color);
+  background: var(--surface-color);
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.07);
+}
+
+.category-pagination nav li a.active,
+.category-pagination nav li a[aria-current="page"] {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--accent-color), transparent 60%);
+}
+
+.category-pagination nav li a:hover:not(.active):not([aria-current="page"]) {
+  background: color-mix(in srgb, var(--accent-color), transparent 88%);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0,0,0,0.1);
+}
+
+.category-pagination nav li.ellipsis {
+  padding: 8px 4px;
+  color: #999;
+  user-select: none;
+}
+
+@media (max-width: 575px) {
+  .category-pagination nav li a {
+    min-width: 34px; height: 34px;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+  }
+}
+
+/* ====================================================
+   PRODUCT LABEL FIX — stack labels vertically, no overlap
+   ==================================================== */
+.product-labels-wrap {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Override single-label rule so .product-label inside wrap has no absolute pos */
+.product-labels-wrap .product-label {
+  position: static;
+}
+
+/* Also fix irvana-label stacking if multiple badges shown */
+.irvana-product-thumb .irvana-label + .irvana-label {
+  top: auto;
+  margin-top: 5px;
+}
+
+/* ====================================================
+   DETAIL PAGE — button matching checkout style
+   ==================================================== */
+.detail-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-add-to-cart-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  min-width: 220px;
+  box-shadow: 0 4px 12px rgba(54,144,231,0.25);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.detail-add-to-cart-btn:hover {
+  background-color: color-mix(in srgb, var(--accent-color), #000 10%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(54,144,231,0.3);
+  color: #fff;
+}
+
+.detail-add-to-cart-btn:active {
+  transform: translateY(0);
+}
+
+.detail-cart-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.detail-cart-link:hover {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+/* Qty buttons — match template style */
+.qty-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.qty-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+.qty-input {
+  width: 58px;
+  height: 38px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 6px;
+}
+.qty-input:focus { outline: none; border-color: var(--accent-color); }
+
+/* ====================================================
+   MOBILE RESPONSIVENESS IMPROVEMENTS
+   ==================================================== */
+
+/* --- Header mobile --- */
+@media (max-width: 991px) {
+  .header .sitename {
+    font-size: 1.1rem;
+  }
+
+  /* Cart & search icons always visible on mobile */
+  .header-action-btn {
+    width: 36px; height: 36px;
+    font-size: 1rem;
+  }
+}
+
+/* --- Product detail page mobile --- */
+@media (max-width: 767px) {
+  .product-details .row { flex-direction: column; }
+
+  .product-details .col-lg-6 { width: 100% !important; }
+
+  /* Full-width product image on mobile */
+  .product-images { margin-bottom: 1.5rem; }
+
+  /* Stack buttons vertically on mobile */
+  .detail-btn-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detail-add-to-cart-btn,
+  .detail-cart-link {
+    width: 100%;
+    min-width: unset;
+    justify-content: center;
+    padding: 14px 16px;
+  }
+
+  /* Quantity selector mobile */
+  .quantity-selector { flex-wrap: wrap; gap: 8px; }
+
+  /* Features grid 2 col on mobile */
+  .product-features .row { gap: 8px; }
+}
+
+/* --- Shop pages (discount/bestsellers/category) mobile --- */
+@media (max-width: 767px) {
+  /* Hide sidebar on mobile, show as collapsible */
+  .shop-sidebar-col, .sidebar {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  /* Filter tabs scrollable on mobile */
+  .product-filters ul {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .product-filters ul::-webkit-scrollbar { display: none; }
+
+  .product-filters li {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Category filter sidebar collapsible toggle */
+  .sidebar-toggle-btn {
+    display: flex !important;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--surface-color);
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-collapsible { display: none; }
+  .sidebar-collapsible.open { display: block; }
+}
+
+@media (min-width: 768px) {
+  .sidebar-toggle-btn { display: none !important; }
+  .sidebar-collapsible { display: block !important; }
+}
+
+/* --- Card grid mobile (2 columns min) --- */
+@media (max-width: 575px) {
+  .irvana-product-box .irvana-product-content { padding: 0.7rem 0.8rem 0.8rem; }
+  .irvana-product-title { font-size: 0.85rem; height: 2.4rem; }
+  .irvana-price-sale,
+  .irvana-price-normal { font-size: 0.9rem; }
+  .irvana-price-original { font-size: 0.75rem; }
+  .irvana-stock-status { font-size: 0.72rem; }
+}
+
+/* --- Pagination mobile --- */
+@media (max-width: 575px) {
+  .category-pagination { padding: 1rem 0; }
+}
+
+/* --- Home best sellers mobile --- */
+@media (max-width: 767px) {
+  .best-sellers .product-card { margin-bottom: 0.5rem; }
+}
+
+/* --- Cart page mobile --- */
+@media (max-width: 767px) {
+  .cart .cart-table th:nth-child(3),
+  .cart .cart-table td:nth-child(3) { display: none; }
+
+  .cart .cart-container { flex-direction: column; }
+  .cart .cart-summary { width: 100%; margin-top: 1.5rem; }
+}
+
+/* --- Checkout mobile --- */
+@media (max-width: 767px) {
+  .checkout .checkout-container { flex-direction: column; }
+  .checkout .order-summary { width: 100%; }
+}
+
+/* --- Footer mobile --- */
+@media (max-width: 767px) {
+  .footer .footer-top .row > div { margin-bottom: 2rem; }
+  .footer .social-links { justify-content: center; }
+}
+
+/* --- Scroll on mobile for filter tabs --- */
+.isotope-filters ul,
+#home-category-tabs {
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 767px) {
+  .isotope-filters ul,
+  #home-category-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px !important;
+  }
+  .isotope-filters ul::-webkit-scrollbar,
+  #home-category-tabs::-webkit-scrollbar { display: none; }
+
+  .isotope-filters li,
+  #home-category-tabs li {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* ====================================================
+   SIDEBAR MOBILE TOGGLE for shop pages
+   ==================================================== */
+@media (max-width: 767px) {
+  .widgets-container { transition: all 0.3s ease; }
+}

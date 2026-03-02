@@ -12,7 +12,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
-    <body class="font-sans antialiased" style="background:var(--bg-base);color:var(--text-primary);">
+    <body class="font-sans antialiased admin-panel" style="background:var(--bg-base);color:var(--text-primary);">
         <div style="min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1;">
             @include('layouts.navigation')
 

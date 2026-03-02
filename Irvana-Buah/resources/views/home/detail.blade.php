@@ -128,17 +128,17 @@
                 </div>
 
                 @auth
-                  <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <button type="button" class="btn btn-success btn-lg px-4 rounded-pill" id="addToCartBtn"
-                            data-product-id="{{ $product->id }}" style="min-width:200px">
+                  <div class="detail-btn-group">
+                    <button type="button" class="detail-add-to-cart-btn" id="addToCartBtn"
+                            data-product-id="{{ $product->id }}">
                       <i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang
                     </button>
-                    <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                    <a href="{{ route('cart.index') }}" class="detail-cart-link">
                       <i class="bi bi-cart3 me-1"></i>Keranjang
                     </a>
                   </div>
                 @else
-                  <a href="{{ route('login') }}" class="btn btn-success btn-lg px-5 rounded-pill">
+                  <a href="{{ route('login') }}" class="detail-add-to-cart-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Login untuk Membeli
                   </a>
                 @endauth
@@ -190,39 +190,9 @@
         @if($relatedProducts->isNotEmpty())
         <div class="related-products mt-5 pt-4 border-top">
           <h3 class="mb-4">Produk Sejenis</h3>
-          <div class="row g-3">
+          <div class="row g-3 gy-4">
             @foreach($relatedProducts as $related)
-            <div class="col-lg-3 col-md-4 col-6">
-              <div class="product-card h-100">
-                <div class="product-image-wrapper">
-                  <a href="{{ route('product.detail', $related->slug) }}">
-                    <img src="{{ $related->image_url }}" alt="{{ $related->name }}" class="img-fluid"
-                         onerror="this.src='{{ asset('assets/img/fruits/default-fruit.webp') }}'">
-                  </a>
-                  @if($related->has_discount)
-                    <span class="badge bg-danger position-absolute top-0 start-0 m-2">-{{ $related->discount_percentage }}%</span>
-                  @endif
-                </div>
-                <div class="product-card-body p-3">
-                  <h6><a href="{{ route('product.detail', $related->slug) }}" class="text-dark text-decoration-none">{{ $related->name }}</a></h6>
-                  <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                      @if($related->has_discount)
-                        <span class="fw-bold text-danger">Rp {{ number_format($related->discount_price, 0, ',', '.') }}</span>
-                        <small class="text-muted text-decoration-line-through ms-1">Rp {{ number_format($related->price, 0, ',', '.') }}</small>
-                      @else
-                        <span class="fw-bold">Rp {{ number_format($related->price, 0, ',', '.') }}</span>
-                      @endif
-                    </div>
-                    @auth
-                    <button class="btn btn-sm btn-success rounded-pill px-3 quick-add" data-id="{{ $related->id }}">
-                      <i class="bi bi-cart-plus"></i>
-                    </button>
-                    @endauth
-                  </div>
-                </div>
-              </div>
-            </div>
+              @include('home.partials.product-card', ['product' => $related])
             @endforeach
           </div>
         </div>
@@ -268,12 +238,12 @@ document.getElementById('addToCartBtn')?.addEventListener('click', function() {
             msg.innerHTML = '<div class="alert alert-success py-2 rounded-3"><i class="bi bi-check-circle me-1"></i>' + data.message + '</div>';
             document.getElementById('cart-badge').textContent = data.cart_count;
             btn.innerHTML = '<i class="bi bi-cart-check me-2"></i>Ditambahkan!';
-            btn.classList.add('btn-outline-success');
-            btn.classList.remove('btn-success');
+            btn.style.background = "#38a169";
+            
             setTimeout(() => {
                 btn.disabled = false;
-                btn.classList.remove('btn-outline-success');
-                btn.classList.add('btn-success');
+                
+                
                 btn.innerHTML = '<i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang';
                 msg.innerHTML = '';
             }, 2500);

@@ -135,6 +135,12 @@ class Product extends Model
         return $this->created_at->diffInDays(now()) <= 7;
     }
 
+    public function getAverageRatingAttribute(): float
+    {
+        // Placeholder - returns 0 until a reviews system is implemented
+        return 0.0;
+    }
+
     public function getIsLowStockAttribute(): bool
     {
         return $this->stock <= 5 && $this->stock > 0;

@@ -116,3 +116,5 @@
       </div>
     </div>
   </footer>
+
+@include('home.partials.cart-handler')

@@ -31,6 +31,7 @@ Route::get('/search-products',          [HomeController::class, 'searchProducts'
 Route::get('/api/discount-stats',        [HomeController::class, 'getDiscountStatsJson'])->name('api.discount.stats');
 Route::get('/api/trending-discounts',    [HomeController::class, 'getTrendingDiscounts'])->name('api.trending.discounts');
 Route::get('/api/best-sellers',          [HomeController::class, 'getBestSellerProductsJson'])->name('api.best-sellers');
+Route::get('/api/products-by-category',  [HomeController::class, 'getProductsByCategoryJson'])->name('api.products.by.category');
 
 // ====================================================
 // CART ROUTES

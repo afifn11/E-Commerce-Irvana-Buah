@@ -189,14 +189,16 @@
                   <div class="col-12 col-sm-6 col-lg-4 col-xl-4 product-item">
                     <div class="product-box">
                       <div class="product-thumb">
-                        @if($product->has_discount)
-                          <span class="product-label product-label-sale">-{{ $product->discount_percentage }}%</span>
-                        @endif
-                        @if($product->stock <= 0)
-                          <span class="product-label product-label-sold">Habis</span>
-                        @elseif($product->is_new)
-                          <span class="product-label">Baru</span>
-                        @endif
+                        <div class="product-labels-wrap">
+                          @if($product->stock <= 0)
+                            <span class="product-label product-label-sold">Habis</span>
+                          @elseif($product->is_new)
+                            <span class="product-label">Baru</span>
+                          @endif
+                          @if($product->has_discount)
+                            <span class="product-label product-label-sale">-{{ $product->discount_percentage }}%</span>
+                          @endif
+                        </div>
                         
                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="main-img" loading="lazy">
                         
@@ -473,7 +475,6 @@ $(document).ready(function() {
     // Quick view functionality
     $('.quick-view-btn').on('click', function() {
         let productSlug = $(this).data('product-slug');
-        // Redirect to product detail page
         window.location.href = '/product/' + productSlug;
     });
 

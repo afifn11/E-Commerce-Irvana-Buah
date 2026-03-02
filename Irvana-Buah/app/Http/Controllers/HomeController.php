@@ -43,7 +43,7 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        $allProducts = Product::with('category')->active()->inStock()->latest()->paginate(12);
+        // allProducts now loaded via AJAX per category (see getProductsByCategoryJson)
 
         $stats = [
             'total_categories' => Category::count(),
@@ -53,7 +53,7 @@ class HomeController extends Controller
 
         return view('home', compact(
             'setting', 'categories', 'featuredProducts',
-            'allProducts', 'discountedProducts', 'bestSellerProducts', 'stats'
+            'discountedProducts', 'bestSellerProducts', 'stats'
         ));
     }
 
@@ -256,16 +256,57 @@ class HomeController extends Controller
         $query = Product::with(['category', 'orderItems'])
             ->active()->inStock()
             ->withCount('orderItems as total_sold')
-            ->withSum('orderItems as total_quantity', 'quantity')
-            ->orderByDesc('total_sold');
+            ->withSum('orderItems as total_quantity', 'quantity');
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
+        match ($request->sort) {
+            'price_low'  => $query->orderBy('price'),
+            'price_high' => $query->orderByDesc('price'),
+            'newest'     => $query->orderByDesc('created_at'),
+            default      => $query->orderByDesc('total_sold'),
+        };
+
         $products = $query->paginate(16)->appends($request->query());
 
         return view('best-sellers', compact('products', 'categories', 'setting'));
+    }
+
+    public function getProductsByCategoryJson(Request $request): JsonResponse
+    {
+        $categoryId = $request->get('category_id');
+        $limit      = (int) $request->get('limit', 8);
+
+        $query = Product::with('category')->active()->inStock()->latest();
+
+        if ($categoryId && $categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+
+        $products = $query->limit($limit)->get()->map(fn (Product $p) => [
+            'id'                  => $p->id,
+            'name'                => $p->name,
+            'slug'                => $p->slug,
+            'image_url'           => $p->image_url,
+            'category_name'       => $p->category?->name ?? '',
+            'category_slug'       => $p->category?->slug ?? '',
+            'price'               => $p->price,
+            'discount_price'      => $p->discount_price,
+            'has_discount'        => $p->has_discount,
+            'discount_percentage' => $p->discount_percentage,
+            'stock'               => $p->stock,
+            'stock_status'        => $p->stock_status,
+            'is_new'              => $p->is_new,
+            'is_low_stock'        => $p->is_low_stock,
+            'detail_url'          => route('product.detail', $p->slug),
+            'category_url'        => $p->category ? route('products.by.category', $p->category->slug) : '#',
+            'formatted_price'             => 'Rp ' . number_format((float)$p->price, 0, ',', '.'),
+            'formatted_discount_price'    => $p->discount_price ? 'Rp ' . number_format((float)$p->discount_price, 0, ',', '.') : null,
+        ]);
+
+        return response()->json(['products' => $products]);
     }
 
     public function getBestSellerProductsJson(): JsonResponse
@@ -318,6 +359,12 @@ class HomeController extends Controller
             'biggest_savings' => Product::active()->inStock()->whereNotNull('discount_price')
                 ->selectRaw('MAX(price - discount_price) as biggest_savings')
                 ->first()->biggest_savings ?? 0,
+            'max_discount_percentage' => Product::active()->inStock()->whereNotNull('discount_price')
+                ->selectRaw('MAX((price - discount_price) / price * 100) as max_discount')
+                ->first()->max_discount ?? 0,
+            'total_savings' => Product::active()->inStock()->whereNotNull('discount_price')
+                ->selectRaw('SUM(price - discount_price) as total_savings')
+                ->first()->total_savings ?? 0,
         ];
     }
 }

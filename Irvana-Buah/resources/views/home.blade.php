@@ -438,6 +438,13 @@
                 </div>
             @endforelse
         </div>
+
+        {{-- CTA: Lihat semua best sellers --}}
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{{ route('best-sellers') }}" class="view-all-btn">
+                Lihat Semua Produk Terlaris &nbsp;<i class="bi bi-trophy"></i>
+            </a>
+        </div>
         
     </div>
 </section>
@@ -694,82 +701,230 @@ document.head.appendChild(style);
 </script>
 
     <section id="product-list" class="product-list section">
-        <div class="container isotope-layout" data-aos="fade-up" data-aos-delay="100" data-default-filter="*" data-layout="masonry" data-sort="original-order">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="product-filters isotope-filters mb-5 d-flex justify-content-center" data-aos="fade-up">
-                        <ul class="d-flex flex-wrap gap-2 list-unstyled">
-                            <li class="filter-active" data-filter="*">All</li>
-                            @foreach($categories as $category)
-                                <li data-filter=".filter-{{ Str::slug($category->name) }}">{{ $category->name }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
+            {{-- Section title --}}
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Katalog Produk</h2>
+                <p>Temukan buah segar pilihan terbaik kami</p>
             </div>
 
-            <div class="row product-container isotope-container" data-aos="fade-up" data-aos-delay="200">
-                @foreach($allProducts as $product)
-                    <div class="col-md-6 col-lg-3 product-item isotope-item filter-{{ Str::slug($product->category->name) }}">
-                        <div class="product-card">
-                            <div class="product-image">
-                                @if($product->has_discount)
-                                    <span class="badge">Sale</span>
-                                @elseif($product->is_new)
-                                    <span class="badge">New</span>
-                                @endif
-                                
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid main-img">
-                                <!-- Jika Anda memiliki gambar hover, bisa ditambahkan di sini -->
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid hover-img">
-                                
-                                <div class="product-overlay">
-                                    <button class="btn-cart btn-add-to-cart" 
-                                            data-product-id="{{ $product->id }}"
-                                            data-product-name="{{ $product->name }}">
-                                        <i class="bi bi-cart-plus"></i> Add to Cart
-                                    </button>
-                                    <div class="product-actions">
-                                        <a href="#" class="action-btn"><i class="bi bi-heart"></i></a>
-                                        <a href="{{ route('product.detail', $product->slug) }}" class="action-btn"><i class="bi bi-eye"></i></a>
-                                        <a href="#" class="action-btn"><i class="bi bi-arrow-left-right"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <h5 class="product-title">
-                                    <a href="{{ route('product.detail', $product->slug) }}">{{ $product->name }}</a>
-                                </h5>
-                                <div class="product-price">
-                                    <span class="current-price">{{ $product->formatted_effective_price }}</span>
-                                    @if($product->has_discount)
-                                        <span class="old-price">{{ $product->formatted_price }}</span>
-                                    @endif
-                                </div>
-                                <div class="product-rating">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($product->average_rating))
-                                            <i class="bi bi-star-fill"></i>
-                                        @elseif($i == ceil($product->average_rating) && $product->average_rating - floor($product->average_rating) >= 0.5)
-                                            <i class="bi bi-star-half"></i>
-                                        @else
-                                            <i class="bi bi-star"></i>
-                                        @endif
-                                    @endfor
-                                    <span>({{ $product->total_sold }})</span>
-                                </div>
-                            </div>
+            {{-- Category filter tabs --}}
+            <div class="product-filters isotope-filters mb-5 d-flex justify-content-center" data-aos="fade-up">
+                <ul class="d-flex flex-wrap gap-2 list-unstyled" id="home-category-tabs">
+                    <li class="filter-active" data-category-id="all">Semua</li>
+                    @foreach($categories as $category)
+                        <li data-category-id="{{ $category->id }}" data-category-slug="{{ $category->slug }}">{{ $category->name }}</li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Product grid (loaded via AJAX) --}}
+            <div class="row g-3 gy-4" id="home-products-grid">
+                {{-- Skeleton loaders shown while first load --}}
+                @for($s = 0; $s < 8; $s++)
+                <div class="col-12 col-sm-6 col-lg-3 home-skeleton-col">
+                    <div class="irvana-product-box" style="min-height:320px;animation:pulse 1.5s ease-in-out infinite;">
+                        <div style="background:#eee;height:240px;"></div>
+                        <div style="padding:1rem;">
+                            <div style="background:#eee;height:12px;border-radius:4px;margin-bottom:8px;width:70%;"></div>
+                            <div style="background:#eee;height:14px;border-radius:4px;width:50%;"></div>
                         </div>
                     </div>
-                @endforeach
+                </div>
+                @endfor
             </div>
 
-            <div class="text-center mt-5" data-aos="fade-up">
-                <a href="{{ route('products') }}" class="view-all-btn">View All Products <i class="bi bi-arrow-right"></i></a>
+            {{-- Lihat semua produk --}}
+            <div class="text-center mt-5" data-aos="fade-up" id="home-view-all-wrap">
+                <a href="{{ route('products') }}" id="home-view-all-link" class="view-all-btn">
+                    Lihat Semua Produk <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
+
+    <style>
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.5; }
+    }
+    </style>
+
+    <script>
+    (function () {
+        const AJAX_URL   = '{{ route("api.products.by.category") }}';
+        const ALL_URL    = '{{ route("products") }}';
+        const CAT_URL    = '{{ url("/category") }}';
+        const LOGIN_URL  = '{{ route("login") }}';
+        const IS_AUTH    = {{ auth()->check() ? 'true' : 'false' }};
+        const CSRF       = '{{ csrf_token() }}';
+        const CART_URL   = '{{ route("cart.store") }}';
+        const DEFAULT_IMG = '{{ asset("assets/img/product/product-1.webp") }}';
+
+        let activeCategoryId = 'all';
+        let activeCategorySlug = null;
+
+        function renderCard(p) {
+            const labelHtml = p.stock <= 0
+                ? `<span class="irvana-label irvana-label-sold">Habis</span>`
+                : p.has_discount
+                    ? `<span class="irvana-label irvana-label-sale">-${p.discount_percentage}%</span>`
+                    : p.is_new
+                        ? `<span class="irvana-label irvana-label-new">Baru</span>`
+                        : '';
+
+            const priceHtml = p.has_discount
+                ? `<span class="irvana-price-sale">${p.formatted_discount_price}</span>
+                   <span class="irvana-price-original">${p.formatted_price}</span>`
+                : `<span class="irvana-price-normal">${p.formatted_price}</span>`;
+
+            const stockHtml = p.stock <= 0
+                ? `<span class="irvana-stock-out"><i class="bi bi-x-circle me-1"></i>Stok habis</span>`
+                : p.is_low_stock
+                    ? `<span class="irvana-stock-low"><i class="bi bi-exclamation-circle me-1"></i>Stok terbatas</span>`
+                    : `<span class="irvana-stock-ok"><i class="bi bi-check-circle me-1"></i>Tersedia</span>`;
+
+            const cartBtn = p.stock > 0
+                ? (IS_AUTH
+                    ? `<button type="button" class="irvana-cart-btn btn-add-to-cart"
+                               data-product-id="${p.id}" data-product-name="${p.name}">
+                           <i class="bi bi-cart-plus me-1"></i> Tambah ke Keranjang
+                       </button>`
+                    : `<a href="${LOGIN_URL}" class="irvana-cart-btn">
+                           <i class="bi bi-box-arrow-in-right me-1"></i> Login untuk Beli
+                       </a>`)
+                : `<button class="irvana-cart-btn irvana-cart-disabled" disabled>
+                       <i class="bi bi-x-circle me-1"></i> Stok Habis
+                   </button>`;
+
+            const truncName = p.name.length > 40 ? p.name.substring(0, 40) + '...' : p.name;
+
+            return `<div class="col-12 col-sm-6 col-lg-3 product-item">
+                <div class="irvana-product-box">
+                    <div class="irvana-product-thumb">
+                        ${labelHtml}
+                        <img src="${p.image_url}" alt="${p.name}" class="irvana-main-img" loading="lazy"
+                             onerror="this.src='${DEFAULT_IMG}'">
+                        <div class="irvana-overlay">
+                            <div class="irvana-quick-actions">
+                                <button type="button" class="irvana-action-btn" title="Wishlist">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <a href="${p.detail_url}" class="irvana-action-btn" title="Lihat Detail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                            <div class="irvana-cart-area">${cartBtn}</div>
+                        </div>
+                    </div>
+                    <div class="irvana-product-content">
+                        <a href="${p.category_url}" class="irvana-category-tag">${p.category_name}</a>
+                        <h3 class="irvana-product-title"><a href="${p.detail_url}">${truncName}</a></h3>
+                        <div class="irvana-product-price">${priceHtml}</div>
+                        <div class="irvana-stock-status">${stockHtml}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function loadProducts(categoryId) {
+            const grid = document.getElementById('home-products-grid');
+            const viewAllLink = document.getElementById('home-view-all-link');
+
+            // Show loading state
+            grid.style.opacity = '0.4';
+            grid.style.pointerEvents = 'none';
+
+            const params = new URLSearchParams({ limit: 8 });
+            if (categoryId && categoryId !== 'all') params.set('category_id', categoryId);
+
+            fetch(`${AJAX_URL}?${params}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.products.length === 0) {
+                        grid.innerHTML = `<div class="col-12 text-center py-5">
+                            <i class="bi bi-inbox" style="font-size:3rem;color:#ccc;"></i>
+                            <p class="mt-3 text-muted">Tidak ada produk di kategori ini.</p>
+                        </div>`;
+                    } else {
+                        grid.innerHTML = data.products.map(renderCard).join('');
+                        // Re-attach add-to-cart events
+                        attachCartEvents();
+                    }
+
+                    // Update "Lihat semua" link
+                    if (categoryId && categoryId !== 'all') {
+                        // Get category slug from the active tab's data
+                        const activeTab = document.querySelector('#home-category-tabs li.filter-active');
+                        const slug = activeTab?.dataset.categorySlug;
+                        if (slug) {
+                            viewAllLink.href = `{{ url("/category") }}/${slug}`;
+                        } else {
+                            viewAllLink.href = ALL_URL;
+                        }
+                        viewAllLink.textContent = 'Lihat Semua di Kategori Ini ';
+                        viewAllLink.innerHTML += '<i class="bi bi-arrow-right"></i>';
+                    } else {
+                        viewAllLink.href = ALL_URL;
+                        viewAllLink.innerHTML = 'Lihat Semua Produk <i class="bi bi-arrow-right"></i>';
+                    }
+
+                    grid.style.opacity = '1';
+                    grid.style.pointerEvents = 'auto';
+                })
+                .catch(() => {
+                    grid.style.opacity = '1';
+                    grid.style.pointerEvents = 'auto';
+                });
+        }
+
+        function attachCartEvents() {
+            document.querySelectorAll('#home-products-grid .btn-add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const id   = this.dataset.productId;
+                    const name = this.dataset.productName;
+                    const orig = this.innerHTML;
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>...';
+
+                    fetch(CART_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF,
+                        },
+                        body: JSON.stringify({ product_id: id, quantity: 1 }),
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        this.innerHTML = '<i class="bi bi-check-lg me-1"></i> Ditambahkan!';
+                        setTimeout(() => { this.innerHTML = orig; this.disabled = false; }, 2000);
+                        // update cart count if exists
+                        const badge = document.querySelector('.cart-count, .cart-badge, [data-cart-count]');
+                        if (badge && data.cart_count) badge.textContent = data.cart_count;
+                    })
+                    .catch(() => { this.innerHTML = orig; this.disabled = false; });
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Category tab click
+            document.querySelectorAll('#home-category-tabs li').forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('#home-category-tabs li').forEach(t => t.classList.remove('filter-active'));
+                    this.classList.add('filter-active');
+                    activeCategoryId = this.dataset.categoryId;
+                    loadProducts(activeCategoryId);
+                });
+            });
+
+            // Initial load
+            loadProducts('all');
+        });
+    })();
+    </script>
 </main>
 @endsection
 

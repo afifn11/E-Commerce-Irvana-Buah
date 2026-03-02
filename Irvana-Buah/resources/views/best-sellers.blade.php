@@ -19,23 +19,50 @@
     <section class="shop-page section">
       <div class="container" data-aos="fade-up">
         <div class="row">
-          <div class="col-lg-3 mb-4">
-            <div class="shop-sidebar">
-              <div class="filter-widget mb-4">
-                <h5>Kategori</h5>
-                <ul class="list-unstyled">
-                  <li><a href="{{ route('best-sellers') }}" class="text-decoration-none {{ !request('category') ? 'fw-bold text-success' : 'text-muted' }}">Semua</a></li>
+          <div class="col-lg-3 sidebar mb-4">
+            <button id="sidebar-toggle-btn" class="sidebar-toggle-btn d-md-none">
+                <span><i class="bi bi-funnel me-2"></i>Filter & Kategori</span>
+                <i class="toggle-icon bi bi-chevron-down"></i>
+              </button>
+              <div id="sidebar-collapsible" class="sidebar-collapsible">
+              <div class="widgets-container">
+              <div class="product-categories-widget widget-item">
+                <h3 class="widget-title">Kategori Buah</h3>
+                <ul class="category-tree list-unstyled mb-0">
+                  <li class="category-item">
+                    <a href="{{ route('best-sellers') }}"
+                       class="category-link {{ !request('category') ? 'fw-bold text-success' : '' }}">
+                      Semua
+                    </a>
+                  </li>
                   @foreach($categories as $cat)
-                    <li><a href="{{ route('best-sellers') }}?category={{ $cat->id }}" 
-                           class="text-decoration-none {{ request('category') == $cat->id ? 'fw-bold text-success' : 'text-muted' }}">
-                      {{ $cat->name }}
-                    </a></li>
+                    <li class="category-item">
+                      <div class="d-flex justify-content-between align-items-center category-header">
+                        <a href="{{ route('best-sellers') }}?category={{ $cat->id }}"
+                           class="category-link {{ request('category') == $cat->id ? 'fw-bold text-success' : '' }}">
+                          {{ $cat->name }}
+                        </a>
+                      </div>
+                    </li>
                   @endforeach
                 </ul>
               </div>
             </div>
+              </div><!-- end sidebar-collapsible -->
           </div>
           <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <p class="text-muted mb-0">{{ $products->total() }} produk terlaris ditemukan</p>
+              <form method="GET" class="d-flex gap-2 align-items-center">
+                <select name="sort" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+                  <option value="best_selling" {{ request('sort','best_selling') == 'best_selling' ? 'selected' : '' }}>Terlaris</option>
+                  <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Harga Terendah</option>
+                  <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Harga Tertinggi</option>
+                  <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
+                </select>
+                <input type="hidden" name="category" value="{{ request('category') }}">
+              </form>
+            </div>
             @if($products->isEmpty())
               <div class="text-center py-5">
                 <i class="bi bi-award fs-1 text-muted"></i>
@@ -43,16 +70,38 @@
                 <a href="{{ route('products') }}" class="btn btn-primary mt-2">Lihat Semua Produk</a>
               </div>
             @else
-              <div class="row g-3">
+              <div class="row g-3 gy-4">
                 @foreach($products as $product)
-                  @include('home.partials.product-card', ['product' => $product])
+                  @include('home.partials.product-card', ['product' => $product, 'colClass' => 'col-12 col-sm-6 col-lg-4'])
                 @endforeach
               </div>
-              <div class="mt-4">{{ $products->links() }}</div>
+              @if($products->hasPages())
+              <section class="category-pagination section">
+                <div class="container">
+                  {{ $products->links() }}
+                </div>
+              </section>
+              @endif
             @endif
           </div>
         </div>
       </div>
     </section>
 </main>
+@endsection
+
+@section('scripts')
+<script>
+// Mobile sidebar toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const collapsible = document.getElementById('sidebar-collapsible');
+    if (toggleBtn && collapsible) {
+        toggleBtn.addEventListener('click', function() {
+            const isOpen = collapsible.classList.toggle('open');
+            toggleBtn.querySelector('.toggle-icon').className = 'toggle-icon bi bi-chevron-' + (isOpen ? 'up' : 'down');
+        });
+    }
+});
+</script>
 @endsection

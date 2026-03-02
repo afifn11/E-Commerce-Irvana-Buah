@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── PREFLIGHT ISOLATION ──────────────────────────────────────
+   Tailwind's base (Preflight) resets some global styles.
+   We re-apply Bootstrap-compatible defaults for non-admin pages.
+   Admin pages use .admin-panel body class.
+   ──────────────────────────────────────────────────────────── */
+body:not(.admin-panel) {
+  background-color: initial;
+  color: initial;
+  font-family: initial;
+  line-height: initial;
+}
+
+body:not(.admin-panel) *,
+body:not(.admin-panel) *::before,
+body:not(.admin-panel) *::after {
+  border-width: initial;
+  box-sizing: border-box;
+}
+
 /* ============================================================
    IRVANA BUAH — GLASSMORPHISM DESIGN SYSTEM 2025
    Minimalist · Elegant · Professional · Dark-First
@@ -10,7 +29,7 @@
 /* ────────────────────────────────────────────────────────────
    CSS CUSTOM PROPERTIES — Design Tokens
    ──────────────────────────────────────────────────────────── */
-:root {
+:root, body.admin-panel {
   --bg-base:        #070c10;
   --bg-surface:     #0c1118;
   --bg-elevated:    #111820;
