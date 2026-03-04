@@ -74,6 +74,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('categories', Admin\CategoryController::class);
     Route::resource('users',     Admin\UserController::class);
     Route::resource('orders',    Admin\OrderController::class)->except(['create', 'store']);
+    Route::resource('coupons',   Admin\CouponController::class);
+    Route::patch('coupons/{coupon}/toggle', [Admin\CouponController::class, 'toggle'])->name('coupons.toggle');
+    Route::get('reviews',                   [Admin\ReviewController::class, 'index'])->name('reviews.index');
+    Route::post('reviews/{review}/reply',   [Admin\ReviewController::class, 'reply'])->name('reviews.reply');
+    Route::patch('reviews/{review}/toggle', [Admin\ReviewController::class, 'toggle'])->name('reviews.toggle');
+    Route::delete('reviews/{review}',       [Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Category image validation
     Route::post('categories/validate-image-url', [Admin\CategoryController::class, 'validateImageUrl'])
@@ -97,6 +103,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-profile',             [Customer\ProfileController::class, 'edit'])->name('customer.profile');
     Route::patch('/my-profile',           [Customer\ProfileController::class, 'update'])->name('customer.profile.update');
     Route::patch('/my-profile/password',  [Customer\ProfileController::class, 'updatePassword'])->name('customer.profile.password');
+
+    // Ulasan (Reviews)
+    Route::get('/review/create',    [Customer\ReviewController::class, 'create'])->name('review.create');
+    Route::post('/review',          [Customer\ReviewController::class, 'store'])->name('review.store');
+
+    // Kupon
+    Route::post('/coupon/apply',    [Customer\CouponController::class, 'apply'])->name('coupon.apply');
 
     // Wishlist
     Route::get('/wishlist',            [Customer\WishlistController::class, 'index'])->name('wishlist.index');

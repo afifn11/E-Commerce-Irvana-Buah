@@ -191,10 +191,32 @@
                     @endforeach
                   </div>
 
+                  {{-- Coupon Input --}}
+                  <div class="coupon-section mb-3" style="padding:12px;background:#f8fafc;border-radius:12px;border:1px dashed #cbd5e1;">
+                    <div style="font-size:.8rem;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">
+                      <i class="bi bi-tag-fill me-1" style="color:#0a4db8;"></i>Kode Kupon
+                    </div>
+                    <div class="d-flex gap-2" id="couponInputRow">
+                      <input type="text" id="couponInput" placeholder="Masukkan kode kupon..."
+                             style="flex:1;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;text-transform:uppercase;"
+                             maxlength="50">
+                      <button type="button" id="applyCouponBtn"
+                              style="padding:8px 16px;background:#0a4db8;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .2s;">
+                        Pakai
+                      </button>
+                    </div>
+                    <div id="couponMsg" style="font-size:.8rem;margin-top:6px;display:none;"></div>
+                    <input type="hidden" name="coupon_code" id="couponCodeInput">
+                  </div>
+
                   <div class="order-totals">
                     <div class="order-subtotal d-flex justify-content-between">
                       <span>Subtotal</span>
-                      <span>Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                      <span id="displaySubtotal">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="order-discount d-flex justify-content-between text-success" id="discountRow" style="display:none!important;">
+                      <span id="discountLabel">Diskon</span>
+                      <span id="discountAmount">- Rp 0</span>
                     </div>
                     <div class="order-shipping d-flex justify-content-between">
                       <span>Ongkos Kirim</span>
@@ -202,7 +224,7 @@
                     </div>
                     <div class="order-total d-flex justify-content-between fw-bold">
                       <span>Total</span>
-                      <span>Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                      <span id="displayTotal">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                     </div>
                   </div>
 
@@ -282,4 +304,67 @@ function selectPayment(el, method) {
     if(details) details.classList.remove('d-none');
 }
 </script>
+
+<script>
+(function() {
+    const applyBtn   = document.getElementById('applyCouponBtn');
+    const input      = document.getElementById('couponInput');
+    const codeHidden = document.getElementById('couponCodeInput');
+    const msg        = document.getElementById('couponMsg');
+    const discRow    = document.getElementById('discountRow');
+    const discAmt    = document.getElementById('discountAmount');
+    const discLbl    = document.getElementById('discountLabel');
+    const totalEl    = document.getElementById('displayTotal');
+    const CSRF       = document.querySelector('meta[name=csrf-token]')?.content || '';
+
+    if (!applyBtn) return;
+
+    applyBtn.addEventListener('click', function() {
+        const code = input.value.trim().toUpperCase();
+        if (!code) { showMsg('Masukkan kode kupon terlebih dahulu.', 'error'); return; }
+
+        applyBtn.disabled = true;
+        applyBtn.textContent = '...';
+
+        fetch('{{ route("coupon.apply") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            body: JSON.stringify({ code })
+        })
+        .then(r => r.json())
+        .then(data => {
+            applyBtn.disabled = false;
+            if (data.success) {
+                showMsg('✓ ' + data.message, 'success');
+                codeHidden.value = data.coupon_code;
+                discRow.style.display = 'flex';
+                discLbl.textContent   = 'Diskon (' + data.coupon_code + ')';
+                discAmt.textContent   = '- ' + data.discount_display;
+                totalEl.textContent   = data.total_display;
+                applyBtn.textContent  = '✓';
+                applyBtn.style.background = '#059669';
+                input.readOnly = true;
+            } else {
+                showMsg('✗ ' + data.message, 'error');
+                applyBtn.textContent = 'Pakai';
+                codeHidden.value = '';
+            }
+        })
+        .catch(() => {
+            applyBtn.disabled = false;
+            applyBtn.textContent = 'Pakai';
+            showMsg('Terjadi kesalahan. Coba lagi.', 'error');
+        });
+    });
+
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyBtn.click(); } });
+
+    function showMsg(text, type) {
+        msg.textContent = text;
+        msg.style.color = type === 'success' ? '#059669' : '#dc2626';
+        msg.style.display = 'block';
+    }
+})();
+</script>
+
 @endsection

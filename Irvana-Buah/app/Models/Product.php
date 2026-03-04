@@ -50,6 +50,26 @@ class Product extends Model
         return $this->hasMany(Cart::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('is_approved', true);
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->approvedReviews()->avg('rating') ?? 0, 1);
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->approvedReviews()->count();
+    }
+
     // ---- Scopes ----
 
     public function scopeActive($query)
@@ -133,12 +153,6 @@ class Product extends Model
     public function getIsNewAttribute(): bool
     {
         return $this->created_at->diffInDays(now()) <= 7;
-    }
-
-    public function getAverageRatingAttribute(): float
-    {
-        // Placeholder - returns 0 until a reviews system is implemented
-        return 0.0;
     }
 
     public function getIsLowStockAttribute(): bool

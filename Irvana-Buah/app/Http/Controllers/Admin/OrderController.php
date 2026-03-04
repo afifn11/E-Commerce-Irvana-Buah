@@ -10,6 +10,8 @@ use App\Repositories\Interfaces\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderStatusMail;
 use Illuminate\View\View;
 
 class OrderController extends Controller
@@ -75,6 +77,14 @@ class OrderController extends Controller
         ]);
 
         $this->orderRepository->update($order, ['status' => $request->status]);
+
+        // Send notification email to customer
+        try {
+            $order->load(['orderItems.product', 'user']);
+            Mail::to($order->user->email)->send(new OrderStatusMail($order));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Order status mail failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

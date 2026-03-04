@@ -13,6 +13,7 @@ readonly class CheckoutDTO
         public string  $address,
         public string  $paymentMethod,
         public ?string $notes,
+        public ?string $couponCode = null,
     ) {}
 
     public static function fromRequest(ProcessCheckoutRequest $request): self
@@ -24,6 +25,7 @@ readonly class CheckoutDTO
             address:       $request->validated('address'),
             paymentMethod: $request->validated('payment_method'),
             notes:         $request->validated('notes'),
+            couponCode:    $request->input('coupon_code'),
         );
     }
 }

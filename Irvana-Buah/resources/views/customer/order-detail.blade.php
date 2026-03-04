@@ -162,6 +162,21 @@
                 <div class="flex-grow-1">
                   <div class="fw-semibold">{{ optional($item->product)->name ?? 'Produk dihapus' }}</div>
                   <div class="text-muted small">{{ $item->quantity }} kg × Rp {{ number_format($item->price, 0, ',', '.') }}</div>
+                  @if($statusVal === 'delivered' && $item->product)
+                    @php
+                      $reviewed = \App\Models\Review::where('user_id', auth()->id())
+                          ->where('product_id', $item->product_id)
+                          ->where('order_id', $order->id)->exists();
+                    @endphp
+                    @if($reviewed)
+                      <span class="badge bg-success-subtle text-success mt-1"><i class="bi bi-check-circle me-1"></i>Sudah diulas</span>
+                    @else
+                      <a href="{{ route('review.create', ['order_id'=>$order->id, 'product_id'=>$item->product_id]) }}"
+                         class="badge mt-1" style="background:#eaf0fc;color:#0a4db8;text-decoration:none;">
+                        <i class="bi bi-star me-1"></i>Tulis Ulasan
+                      </a>
+                    @endif
+                  @endif
                 </div>
                 <div class="fw-bold text-end" style="min-width:100px">
                   Rp {{ number_format($item->quantity * $item->price, 0, ',', '.') }}

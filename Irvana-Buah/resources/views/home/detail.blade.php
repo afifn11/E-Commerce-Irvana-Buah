@@ -216,6 +216,13 @@
       </div>
     </section>
 
+    {{-- Ulasan Pelanggan --}}
+    <section class="section pt-0">
+      <div class="container" data-aos="fade-up">
+        @include('home.partials.product-reviews')
+      </div>
+    </section>
+
 </main>
 @endsection
 
@@ -297,6 +304,7 @@ document.querySelectorAll('.quick-add').forEach(btn => {
 });
 @endauth
 </script>
+{{-- Reviews Section --}}
 @push('seo')
 <script type="application/ld+json">
 {
