@@ -7,7 +7,30 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Irvana Buah - Toko Buah Segar Online')</title>
   <meta name="description" content="@yield('meta_description', 'Irvana Buah - Toko buah segar berkualitas premium. Pesan online, pengiriman cepat ke seluruh kota.')">
-  <meta name="keywords" content="@yield('meta_keywords', 'buah segar, toko buah online, buah premium, irvana buah')">
+  <meta name="keywords"    content="@yield('meta_keywords',     'buah segar, toko buah online, buah premium, irvana buah')">
+  <meta name="robots"      content="index, follow">
+  <link rel="canonical"    href="{{ url()->current() }}">
+
+  {{-- Open Graph (WhatsApp / Facebook share preview) --}}
+  <meta property="og:type"        content="@yield('og_type', 'website')">
+  <meta property="og:url"         content="{{ url()->current() }}">
+  <meta property="og:title"       content="@yield('og_title', config('app.name', 'Irvana Buah') . ' - Toko Buah Segar Online')">
+  <meta property="og:description" content="@yield('og_description', 'Irvana Buah - Toko buah segar berkualitas premium. Pesan online, pengiriman cepat ke seluruh kota.')">
+  <meta property="og:image"       content="@yield('og_image', asset('assets/img/og-default.webp'))">
+  <meta property="og:site_name"   content="Irvana Buah">
+  <meta property="og:locale"      content="id_ID">
+
+  {{-- Twitter Card --}}
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="@yield('og_title', 'Irvana Buah')">
+  <meta name="twitter:description" content="@yield('og_description', 'Toko buah segar berkualitas premium.')">
+  <meta name="twitter:image"       content="@yield('og_image', asset('assets/img/og-default.webp'))">
+
+  @stack('seo')
+  {{-- Site-level Organization schema --}}
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "Organization", "name": "Irvana Buah", "url": "{{ config('app.url') }}", "logo": "{{ asset('assets/img/logo.png') }}", "sameAs": [] }
+  </script>
 
   <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
   <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">

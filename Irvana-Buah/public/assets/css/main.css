@@ -13801,3 +13801,239 @@ textarea.irvana-form-input { resize: vertical; min-height: 130px; }
   .irvana-contact-card h4 { font-size: 0.75rem; }
   .irvana-contact-card p  { font-size: 0.72rem; }
 }
+
+/* ── Search autocomplete positioning ── */
+.header .main-header .desktop-search-form {
+    position: relative !important;
+}
+
+/* ════════════════════════════════════════════════════════
+   ORDER TRACKING VISUAL
+   ════════════════════════════════════════════════════════ */
+.order-track-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.trk-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+.trk-icon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+.trk-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    position: relative; z-index: 1;
+    transition: all .3s;
+}
+.trk-line {
+    width: 2px; flex: 1; min-height: 32px;
+    margin: 4px 0;
+    background: #e2e8f0;
+    border-radius: 2px;
+    transition: background .3s;
+}
+.trk-body {
+    padding-bottom: 28px;
+    flex: 1;
+}
+.trk-label {
+    font-weight: 700; font-size: .95rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+.trk-desc {
+    font-size: .82rem; color: #b0b8c8;
+}
+.trk-time {
+    font-size: .78rem; font-weight: 600;
+    color: var(--accent-color);
+    margin-top: 4px;
+    display: flex; align-items: center; gap: 4px;
+}
+
+/* Done step */
+.trk-done .trk-icon {
+    background: #d1fae5; color: #059669;
+}
+.trk-done .trk-line  { background: #059669; }
+.trk-done .trk-label { color: #059669; }
+.trk-done .trk-desc  { color: #64748b; }
+
+/* Active step */
+.trk-active .trk-icon {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 0 0 6px rgba(10,77,184,.15);
+    animation: trkPulse 2s ease-in-out infinite;
+}
+.trk-active .trk-label { color: var(--accent-color); font-size: 1rem; }
+.trk-active .trk-desc  { color: #475569; }
+
+/* Pending step */
+.trk-pending .trk-icon { background: #f1f5f9; color: #cbd5e1; }
+
+@keyframes trkPulse {
+    0%,100% { box-shadow: 0 0 0 6px rgba(10,77,184,.15); }
+    50%      { box-shadow: 0 0 0 10px rgba(10,77,184,.05); }
+}
+
+/* ════════════════════════════════════════════════════════
+   WISHLIST — heart button active state on detail page
+   ════════════════════════════════════════════════════════ */
+.irvana-action-btn[data-wishlist-id] {
+    cursor: pointer;
+    transition: color .2s, transform .2s;
+}
+.irvana-action-btn[data-wishlist-id]:hover {
+    color: #ef4444 !important;
+    transform: scale(1.15);
+}
+.irvana-action-btn.wishlisted {
+    color: #ef4444 !important;
+}
+.irvana-action-btn.wishlisted i {
+    animation: wlPop .3s ease;
+}
+@keyframes wlPop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+/* ════════════════════════════════════════════════════════
+   SEO — Open Graph / Share preview (visual only, no CSS)
+   Wishlist page btn-irvana-outline
+   ════════════════════════════════════════════════════════ */
+.btn-irvana-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 20px; border-radius: 10px; font-size: .88rem; font-weight: 600;
+    border: 2px solid var(--accent-color); color: var(--accent-color);
+    background: transparent; text-decoration: none;
+    transition: all .25s;
+}
+.btn-irvana-outline:hover {
+    background: var(--accent-color); color: #fff;
+}
+
+/* ============================================================
+   SESSION 8: FASE 1 MODERN FEATURES
+   ============================================================ */
+
+/* ── Wishlist header badge ── */
+#wishlistHeaderBtn .badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    font-size: .7rem; font-weight: 700;
+    background: #ef4444; color: #fff;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+}
+#wishlistHeaderBtn {
+    position: relative;
+}
+#wishlistHeaderBtn i.bi-heart {
+    transition: color .2s;
+}
+#wishlistHeaderBtn:hover i.bi-heart {
+    color: #ef4444;
+}
+
+/* ── Order Tracking Timeline ── */
+.order-tracking-timeline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    padding: 12px 0 4px;
+    overflow-x: auto;
+}
+.ott-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    min-width: 72px;
+    text-align: center;
+}
+.ott-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 3px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; color: #cbd5e1;
+    position: relative; z-index: 2;
+    transition: all .4s ease;
+}
+.ott-step.done .ott-circle {
+    background: #059669; border-color: #059669;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(5,150,105,.3);
+}
+.ott-step.active .ott-circle {
+    background: #0a4db8; border-color: #0a4db8;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(10,77,184,.4);
+    animation: ottPulse 2s ease-in-out infinite;
+}
+.ott-check {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 18px; height: 18px;
+    background: #059669; border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .65rem; color: #fff;
+}
+.ott-label {
+    font-size: .78rem; font-weight: 700;
+    color: #94a3b8; margin-top: 8px;
+    transition: color .3s;
+}
+.ott-step.done .ott-label  { color: #059669; }
+.ott-step.active .ott-label { color: #0a4db8; }
+.ott-sub {
+    font-size: .7rem; color: #cbd5e1; margin-top: 2px; line-height: 1.3;
+    max-width: 80px;
+}
+.ott-step.active .ott-sub { color: #94a3b8; }
+.ott-line {
+    position: absolute;
+    top: 24px;
+    left: 50%; right: -50%;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+.ott-step.done .ott-line {
+    background: linear-gradient(to right, #059669, #059669);
+}
+
+@keyframes ottPulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(10,77,184,.4); }
+    50%       { box-shadow: 0 4px 24px rgba(10,77,184,.7), 0 0 0 8px rgba(10,77,184,.1); }
+}
+
+@media (max-width: 576px) {
+    .ott-circle { width: 38px; height: 38px; font-size: .9rem; }
+    .ott-label  { font-size: .7rem; }
+    .ott-sub    { display: none; }
+    .ott-line   { top: 19px; }
+}
+
+/* ── Search form wrapper relative for autocomplete ── */
+.search-form {
+    position: relative;
+}

@@ -27,7 +27,7 @@
             {{-- Desktop hover overlay --}}
             <div class="irvana-overlay">
                 <div class="irvana-quick-actions">
-                    <button type="button" class="irvana-action-btn" title="Wishlist">
+                    <button type="button" class="irvana-action-btn" title="Wishlist" data-wishlist-id="{{ $product->id }}">
                         <i class="bi bi-heart"></i>
                     </button>
                     <a href="{{ route('product.detail', $product->slug) }}" class="irvana-action-btn" title="Lihat Detail">

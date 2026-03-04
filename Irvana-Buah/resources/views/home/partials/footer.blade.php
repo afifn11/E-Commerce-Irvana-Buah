@@ -118,3 +118,6 @@
   </footer>
 
 @include('home.partials.cart-handler')
+@include('home.partials.wishlist-handler')
+@include('home.partials.whatsapp-widget')
+@include('home.partials.search-autocomplete')

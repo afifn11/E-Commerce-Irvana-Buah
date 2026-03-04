@@ -47,6 +47,14 @@
                       <i class="bi bi-bag-check me-2"></i>
                       <span>Pesanan Saya</span>
                     </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('wishlist.index') }}">
+                      <i class="bi bi-heart me-2"></i>
+                      <span>Wishlist Saya</span>
+                      @php $wCount = auth()->check() ? \App\Models\Wishlist::where('user_id', auth()->id())->count() : 0; @endphp
+                      @if($wCount > 0)
+                        <span class="ms-auto badge" style="background:var(--accent-color);font-size:.7rem;">{{ $wCount }}</span>
+                      @endif
+                    </a>
                     @if(Auth::user()->role === 'admin')
                       <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
                         <i class="bi bi-speedometer2 me-2"></i>
@@ -76,6 +84,18 @@
                 @endauth
               </div>
             </div>
+
+            @auth
+            <a href="{{ route('wishlist.index') }}" class="header-action-btn position-relative" id="wishlistHeaderBtn" title="Wishlist Saya">
+              <i class="bi bi-heart"></i>
+              @php $wlCount = \App\Models\Wishlist::where('user_id', Auth::id())->count(); @endphp
+              @if($wlCount > 0)
+                <span class="badge" id="wishlist-badge">{{$wlCount}}</span>
+              @else
+                <span class="badge" id="wishlist-badge" style="display:none;">0</span>
+              @endif
+            </a>
+            @endauth
 
             <a href="{{ route('cart.index') }}" class="header-action-btn position-relative" id="cartHeaderBtn">
               <i class="bi bi-cart3"></i>

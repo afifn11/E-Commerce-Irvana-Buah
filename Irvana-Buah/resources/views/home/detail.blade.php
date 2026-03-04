@@ -1,6 +1,10 @@
 @extends('home.app')
 
 @section('title', $product->name . ' - Irvana Buah')
+@section('og_type',        'product')
+@section('og_title',       $product->name . ' - Irvana Buah')
+@section('og_description', Str::limit(strip_tags($product->description ?? ''), 200))
+@section('og_image',       $product->image_url)
 @section('meta_description', Str::limit(strip_tags($product->description), 160))
 
 @section('body_class', 'product-details-page')
@@ -115,6 +119,17 @@
                   </strong>
                 </span>
               </div>
+
+              {{-- Wishlist toggle --}}
+              @auth
+              <div class="mb-3">
+                <button type="button" class="irvana-action-btn detail-wishlist-btn" 
+                        data-wishlist-id="{{ $product->id }}"
+                        style="background:#f7f9ff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 18px;font-size:.88rem;font-weight:600;color:#64748b;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all .25s;">
+                  <i class="bi bi-heart"></i> Simpan ke Wishlist
+                </button>
+              </div>
+              @endauth
 
               @if($product->stock > 0)
               <!-- Add to Cart -->
@@ -282,4 +297,26 @@ document.querySelectorAll('.quick-add').forEach(btn => {
 });
 @endauth
 </script>
+@push('seo')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ addslashes($product->name) }}",
+  "image": "{{ $product->image_url }}",
+  "description": "{{ addslashes(Str::limit(strip_tags($product->description ?? ''), 200)) }}",
+  "sku": "IRVANA-{{ $product->id }}",
+  "brand": { "@type": "Brand", "name": "Irvana Buah" },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "IDR",
+    "price": "{{ $product->effective_price }}",
+    "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+    "seller": { "@type": "Organization", "name": "Irvana Buah" }
+  }
+}
+</script>
+@endpush
+
 @endsection

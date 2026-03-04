@@ -97,6 +97,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-profile',             [Customer\ProfileController::class, 'edit'])->name('customer.profile');
     Route::patch('/my-profile',           [Customer\ProfileController::class, 'update'])->name('customer.profile.update');
     Route::patch('/my-profile/password',  [Customer\ProfileController::class, 'updatePassword'])->name('customer.profile.password');
+
+    // Wishlist
+    Route::get('/wishlist',            [Customer\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle',    [Customer\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{id}',    [Customer\WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    Route::get('/api/wishlist/status', [Customer\WishlistController::class, 'status'])->name('wishlist.status');
 });
 
 require __DIR__ . '/auth.php';

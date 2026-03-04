@@ -45,10 +45,10 @@
       <div class="row g-4">
         {{-- Left column --}}
         <div class="col-lg-8">
-          {{-- Status card --}}
+          {{-- Order header --}}
           <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-4">
-              <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
                 <div>
                   <p class="text-muted small mb-1"><i class="bi bi-receipt me-1"></i>No. Pesanan</p>
                   <h5 class="fw-bold mb-1">{{ $order->order_number }}</h5>
@@ -60,8 +60,93 @@
                   </span>
                 </div>
               </div>
+
+              {{-- Visual tracking timeline --}}
+              @if($statusVal !== 'cancelled')
+              @php
+                $steps = [
+                  ['key'=>'pending',    'icon'=>'bi-clock-fill',        'label'=>'Pesanan Masuk',    'sub'=>'Menunggu konfirmasi admin'],
+                  ['key'=>'processing', 'icon'=>'bi-gear-fill',         'label'=>'Diproses',         'sub'=>'Pesanan sedang disiapkan'],
+                  ['key'=>'shipped',    'icon'=>'bi-truck',             'label'=>'Dikirim',          'sub'=>'Dalam perjalanan ke Anda'],
+                  ['key'=>'delivered',  'icon'=>'bi-check-circle-fill', 'label'=>'Selesai',          'sub'=>'Pesanan telah diterima'],
+                ];
+                $order_map = ['pending'=>0, 'processing'=>1, 'shipped'=>2, 'delivered'=>3];
+                $currentStep = $order_map[$statusVal] ?? 0;
+              @endphp
+              <div class="order-tracking-timeline">
+                @foreach($steps as $i => $step)
+                  @php
+                    $done   = $i < $currentStep;
+                    $active = $i === $currentStep;
+                  @endphp
+                  <div class="ott-step {{ $done ? 'done' : ($active ? 'active' : '') }}">
+                    <div class="ott-circle">
+                      <i class="bi {{ $step['icon'] }}"></i>
+                      @if($done)<span class="ott-check"><i class="bi bi-check-lg"></i></span>@endif
+                    </div>
+                    <div class="ott-label">{{ $step['label'] }}</div>
+                    <div class="ott-sub">{{ $step['sub'] }}</div>
+                    @if(!$loop->last)<div class="ott-line"></div>@endif
+                  </div>
+                @endforeach
+              </div>
+              @endif
             </div>
           </div>
+
+          {{-- ── Visual Order Tracking ── --}}
+          @php
+            $steps = [
+              ['key'=>'pending',    'icon'=>'bi-clock-fill',        'label'=>'Pesanan Dibuat',   'desc'=>'Pesanan diterima, menunggu konfirmasi'],
+              ['key'=>'processing', 'icon'=>'bi-gear-fill',         'label'=>'Sedang Diproses',  'desc'=>'Pesanan sedang disiapkan oleh tim kami'],
+              ['key'=>'shipped',    'icon'=>'bi-truck',             'label'=>'Dalam Pengiriman', 'desc'=>'Pesanan sedang dalam perjalanan ke Anda'],
+              ['key'=>'delivered',  'icon'=>'bi-check-circle-fill', 'label'=>'Selesai',          'desc'=>'Pesanan telah diterima'],
+            ];
+            $flow   = ['pending'=>0,'processing'=>1,'shipped'=>2,'delivered'=>3];
+            $curIdx = $statusVal === 'cancelled' ? -1 : ($flow[$statusVal] ?? 0);
+          @endphp
+
+          @if($statusVal !== 'cancelled')
+          <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body px-4 py-4">
+              <h6 class="fw-bold mb-4"><i class="bi bi-pin-map me-2" style="color:var(--accent-color)"></i>Status Pengiriman</h6>
+              <div class="order-track-wrap">
+                @foreach($steps as $i => $step)
+                  @php
+                    $done   = $i < $curIdx;
+                    $active = $i === $curIdx;
+                    $cls    = $done ? 'trk-done' : ($active ? 'trk-active' : 'trk-pending');
+                  @endphp
+                  <div class="trk-step {{ $cls }}">
+                    <div class="trk-icon-wrap">
+                      <div class="trk-icon"><i class="bi {{ $step['icon'] }}"></i></div>
+                      @if(!$loop->last)<div class="trk-line"></div>@endif
+                    </div>
+                    <div class="trk-body">
+                      <div class="trk-label">{{ $step['label'] }}</div>
+                      <div class="trk-desc">{{ $step['desc'] }}</div>
+                      @if($active)
+                        <div class="trk-time"><i class="bi bi-clock me-1"></i>{{ $order->updated_at->format('d M Y, H:i') }} WIB</div>
+                      @endif
+                    </div>
+                  </div>
+                @endforeach
+              </div>
+            </div>
+          </div>
+          @else
+          <div class="card border-0 shadow-sm rounded-4 mb-4" style="border-left:4px solid #ef4444 !important;">
+            <div class="card-body px-4 py-3 d-flex align-items-center gap-3">
+              <div style="width:44px;height:44px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-x-circle-fill" style="color:#ef4444;font-size:1.2rem;"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-danger">Pesanan Dibatalkan</div>
+                <div class="text-muted small">Pesanan ini telah dibatalkan pada {{ $order->updated_at->format('d M Y') }}</div>
+              </div>
+            </div>
+          </div>
+          @endif
 
           {{-- Items --}}
           <div class="card border-0 shadow-sm rounded-4 mb-4">

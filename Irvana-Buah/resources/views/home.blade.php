@@ -820,7 +820,7 @@ document.head.appendChild(style);
                              onerror="this.src='${DEFAULT_IMG}'">
                         <div class="irvana-overlay">
                             <div class="irvana-quick-actions">
-                                <button type="button" class="irvana-action-btn" title="Wishlist">
+                                <button type="button" class="irvana-action-btn" title="Wishlist" data-wishlist-id="${p.id}">
                                     <i class="bi bi-heart"></i>
                                 </button>
                                 <a href="${p.detail_url}" class="irvana-action-btn" title="Lihat Detail">
