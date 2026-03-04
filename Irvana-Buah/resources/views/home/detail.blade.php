@@ -56,7 +56,7 @@
                 <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
                      id="main-product-image"
                      onerror="this.src='{{ asset('assets/img/fruits/default-fruit.webp') }}'"
-                     style="width:100%;height:420px;object-fit:cover;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:block;">
+                     class="detail-main-img" style="width:100%;height:420px;object-fit:cover;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:block;">
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@
           <h3 class="mb-4">Produk Sejenis</h3>
           <div class="row g-3 gy-4">
             @foreach($relatedProducts as $related)
-              @include('home.partials.product-card', ['product' => $related])
+              @include('home.partials.product-card', ['product' => $related, 'colClass' => 'col-6 col-sm-6 col-lg-3'])
             @endforeach
           </div>
         </div>

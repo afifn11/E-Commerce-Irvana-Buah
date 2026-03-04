@@ -30,7 +30,7 @@
           <div style="font-size:5rem; color:#dee2e6;"><i class="bi bi-bag-x"></i></div>
           <h4 class="mt-3 text-muted">Belum ada pesanan</h4>
           <p class="text-muted">Yuk mulai belanja buah segar berkualitas!</p>
-          <a href="{{ route('products') }}" class="btn btn-success btn-lg px-4 mt-2">
+          <a href="{{ route('products') }}" class="btn btn-irvana btn-irvana-lg mt-2">
             <i class="bi bi-shop me-2"></i>Mulai Belanja
           </a>
         </div>
@@ -98,7 +98,7 @@
                   <span class="text-muted small d-block">Total Pembayaran</span>
                   <span class="fw-bold fs-5" style="color: var(--accent-color)">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                 </div>
-                <a href="{{ route('customer.orders.show', $order->id) }}" class="btn btn-outline-success px-4 rounded-pill">
+                <a href="{{ route('customer.orders.show', $order->id) }}" class="btn btn-irvana-outline">
                   <i class="bi bi-eye me-1"></i>Lihat Detail
                 </a>
               </div>

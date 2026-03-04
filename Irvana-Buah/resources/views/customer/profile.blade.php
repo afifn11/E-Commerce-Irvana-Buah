@@ -84,7 +84,7 @@
                         <input type="text" class="form-control bg-light" value="{{ $user->created_at->format('d F Y') }}" disabled>
                       </div>
                       <div class="col-12 pt-2">
-                        <button type="submit" class="btn btn-success px-4 rounded-pill">
+                        <button type="submit" class="btn btn-irvana">
                           <i class="bi bi-check-circle me-2"></i>Simpan Perubahan
                         </button>
                       </div>
@@ -122,7 +122,7 @@
                         <input type="password" name="password_confirmation" class="form-control" required>
                       </div>
                       <div class="col-12 pt-2">
-                        <button type="submit" class="btn btn-success px-4 rounded-pill">
+                        <button type="submit" class="btn btn-irvana">
                           <i class="bi bi-lock-fill me-2"></i>Ubah Password
                         </button>
                       </div>

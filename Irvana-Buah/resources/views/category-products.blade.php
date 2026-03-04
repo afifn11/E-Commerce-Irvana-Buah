@@ -64,23 +64,24 @@
                   <input type="hidden" name="search" value="{{ request('search') }}">
                 </form>
               </div>
-            </div>
-          </div>
+            </div><!-- end widgets-container -->
+            </div><!-- end sidebar-collapsible -->
+          </div><!-- end col-lg-3 sidebar -->
           <!-- Products -->
-          <div class="col-lg-9">
+          <div class="col-lg-9 order-2 order-lg-1">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <p class="text-muted mb-0">{{ $products->total() }} produk ditemukan</p>
               <form method="GET" class="d-flex gap-2">
                 <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari di kategori ini..." value="{{ request('search') }}">
                 <input type="hidden" name="sort" value="{{ request('sort') }}">
-                <button type="submit" class="btn btn-sm btn-primary">Cari</button>
+                <button type="submit" class="btn btn-irvana btn-sm">Cari</button>
               </form>
             </div>
             @if($products->isEmpty())
               <div class="text-center py-5">
                 <i class="bi bi-search fs-1 text-muted"></i>
                 <h5 class="mt-3">Tidak ada produk ditemukan</h5>
-                <a href="{{ route('products.by.category', $category->slug) }}" class="btn btn-primary mt-2">Reset Filter</a>
+                <a href="{{ route('products.by.category', $category->slug) }}" class="btn btn-irvana mt-2">Reset Filter</a>
               </div>
             @else
               <div class="row g-3 gy-4">

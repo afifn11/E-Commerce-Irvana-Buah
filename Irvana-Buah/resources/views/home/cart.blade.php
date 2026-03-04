@@ -31,7 +31,7 @@
                 @if($cartItems->isEmpty())
                     <div class="text-center py-5">
                         <h4>Keranjang Anda masih kosong.</h4>
-                        <a href="{{ route('products') }}" class="btn btn-primary mt-3">Mulai Belanja</a>
+                        <a href="{{ route('products') }}" class="btn btn-irvana mt-3">Mulai Belanja</a>
                     </div>
                 @else
                     <div class="cart-header d-none d-lg-block">
@@ -44,31 +44,55 @@
                     </div>
                     @foreach($cartItems as $item)
                     <div class="cart-item" data-id="{{ $item->id }}">
-                        <div class="row align-items-center gy-4">
-                            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                                <div class="product-info d-flex align-items-center">
-                                    <div class="product-image">
-                                        <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="img-fluid" loading="lazy">
-                                    </div>
-                                    <div class="product-details">
-                                        <h6 class="product-title"><a href="{{ route('product.detail', $item->product->slug) }}">{{ $item->product->name }}</a></h6>
-                                        <button class="remove-item" type="button" data-id="{{ $item->id }}"><i class="bi bi-trash"></i> Hapus</button>
+                        {{-- Desktop layout (lg+) --}}
+                        <div class="d-none d-lg-block">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <div class="product-info d-flex align-items-center">
+                                        <div class="product-image">
+                                            <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="img-fluid" loading="lazy">
+                                        </div>
+                                        <div class="product-details ms-3">
+                                            <h6 class="product-title mb-1"><a href="{{ route('product.detail', $item->product->slug) }}">{{ $item->product->name }}</a></h6>
+                                            <button class="remove-item" type="button" data-id="{{ $item->id }}"><i class="bi bi-trash"></i> Hapus</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-lg-2 text-center">
-                                <div class="price-tag">
+                                <div class="col-lg-2 text-center">
                                     <span class="current-price">Rp {{ number_format($item->product->effective_price, 0, ',', '.') }}</span>
                                 </div>
-                            </div>
-                            <div class="col-12 col-lg-2 text-center">
-                                <div class="quantity-selector">
+                                <div class="col-lg-2 text-center">
                                     <input type="number" class="quantity-input" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" data-id="{{ $item->id }}">
                                 </div>
+                                <div class="col-lg-2 text-center">
+                                    <div class="item-total">
+                                        <span>Rp {{ number_format($item->quantity * $item->product->effective_price, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 col-lg-2 text-center mt-3 mt-lg-0">
-                                <div class="item-total">
-                                    <span>Rp {{ number_format($item->quantity * $item->product->effective_price, 0, ',', '.') }}</span>
+                        </div>
+
+                        {{-- Mobile layout (< lg) --}}
+                        <div class="d-lg-none cart-item-mobile">
+                            <div class="d-flex gap-3 align-items-start">
+                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
+                                     class="cart-mobile-img" loading="lazy"
+                                     onerror="this.src='{{ asset('assets/img/product/product-1.webp') }}'">
+                                <div class="flex-grow-1 min-w-0">
+                                    <a href="{{ route('product.detail', $item->product->slug) }}" class="cart-mobile-name">{{ $item->product->name }}</a>
+                                    <div class="cart-mobile-price">Rp {{ number_format($item->product->effective_price, 0, ',', '.') }}</div>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input type="number" class="quantity-input cart-mobile-qty" value="{{ $item->quantity }}"
+                                                   min="1" max="{{ $item->product->stock }}" data-id="{{ $item->id }}">
+                                            <span class="item-total cart-mobile-total">
+                                                Rp {{ number_format($item->quantity * $item->product->effective_price, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                        <button class="remove-item cart-mobile-remove" type="button" data-id="{{ $item->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -260,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div style="font-size:4rem;color:#ddd;margin-bottom:1rem;">🛒</div>
                                 <h4 style="color:#555;">Keranjang Anda kosong</h4>
                                 <p class="text-muted">Yuk tambahkan produk ke keranjang!</p>
-                                <a href="{{ route('products') }}" class="btn btn-primary mt-2">Mulai Belanja</a>
+                                <a href="{{ route('products') }}" class="btn btn-irvana mt-2">Mulai Belanja</a>
                               </div>`;
                         }
                         // Hide summary column

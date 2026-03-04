@@ -339,7 +339,7 @@
     <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row gy-4">
             @forelse($bestSellerProducts as $index => $product)
-                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ 100 + ($index * 50) }}">
+                <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ 100 + ($index * 50) }}">
                     <div class="product-card">
                         <div class="product-image">
                             <img src="{{ $product->image_url }}" 
@@ -442,7 +442,7 @@
         {{-- CTA: Lihat semua best sellers --}}
         <div class="text-center mt-5" data-aos="fade-up">
             <a href="{{ route('best-sellers') }}" class="view-all-btn">
-                Lihat Semua Produk Terlaris &nbsp;<i class="bi bi-trophy"></i>
+                Lihat Semua Produk Terlaris <i class="bi bi-arrow-right"></i>
             </a>
         </div>
         
@@ -723,7 +723,7 @@ document.head.appendChild(style);
             <div class="row g-3 gy-4" id="home-products-grid">
                 {{-- Skeleton loaders shown while first load --}}
                 @for($s = 0; $s < 8; $s++)
-                <div class="col-12 col-sm-6 col-lg-3 home-skeleton-col">
+                <div class="col-6 col-sm-6 col-lg-3 home-skeleton-col">
                     <div class="irvana-product-box" style="min-height:320px;animation:pulse 1.5s ease-in-out infinite;">
                         <div style="background:#eee;height:240px;"></div>
                         <div style="padding:1rem;">
@@ -812,7 +812,7 @@ document.head.appendChild(style);
 
             const truncName = p.name.length > 40 ? p.name.substring(0, 40) + '...' : p.name;
 
-            return `<div class="col-12 col-sm-6 col-lg-3 product-item">
+            return `<div class="col-6 col-sm-6 col-lg-3 product-item">
                 <div class="irvana-product-box">
                     <div class="irvana-product-thumb">
                         ${labelHtml}
@@ -836,10 +836,9 @@ document.head.appendChild(style);
                         <div class="irvana-product-price">${priceHtml}</div>
                         <div class="irvana-stock-status">${stockHtml}</div>
                     </div>
+                    ${mobileCart}
                 </div>
-            </div>
-            ${mobileCart}
-        </div>`;
+            </div>`;
         }
 
         function loadProducts(categoryId) {

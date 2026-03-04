@@ -13150,3 +13150,654 @@ section,
   border-color: var(--accent-color) !important;
 }
 
+
+/* ====================================================
+   BTN-IRVANA — unified accent-color button for all pages
+   ==================================================== */
+.btn-irvana {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 22px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background-color: var(--accent-color);
+  color: #fff !important;
+  border: 2px solid var(--accent-color);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent-color), transparent 65%);
+  white-space: nowrap;
+}
+.btn-irvana:hover, .btn-irvana:focus {
+  background-color: color-mix(in srgb, var(--accent-color), #000 12%);
+  border-color: color-mix(in srgb, var(--accent-color), #000 12%);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px color-mix(in srgb, var(--accent-color), transparent 55%);
+  text-decoration: none;
+}
+.btn-irvana:active { transform: translateY(0); }
+
+.btn-irvana-lg {
+  padding: 13px 32px;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+.btn-irvana.btn-sm, .btn-irvana-sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+
+.btn-irvana-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 20px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--accent-color) !important;
+  border: 2px solid var(--accent-color);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn-irvana-outline:hover {
+  background-color: var(--accent-color);
+  color: #fff !important;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* ====================================================
+   DISCOUNT STATS — compact on mobile (3-col always)
+   ==================================================== */
+@media (max-width: 575px) {
+  /* Stats cards font sizes */
+  .bg-danger.rounded-3 h3,
+  .bg-warning.rounded-3 h3,
+  .bg-success.rounded-3 h3 {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  .bg-danger.rounded-3 p,
+  .bg-warning.rounded-3 p,
+  .bg-success.rounded-3 p {
+    font-size: 0.7rem;
+    margin: 0;
+  }
+  .bg-danger.rounded-3,
+  .bg-warning.rounded-3,
+  .bg-success.rounded-3 {
+    padding: 10px 6px !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* ====================================================
+   SHOP ROW — sidebar always on top on mobile
+   ==================================================== */
+@media (max-width: 991px) {
+  .irvana-shop-row {
+    display: flex;
+    flex-direction: column;
+  }
+  .irvana-shop-row .sidebar {
+    order: -1; /* force sidebar above products */
+  }
+  .irvana-shop-row .col-lg-9 {
+    order: 1;
+  }
+}
+
+/* ====================================================
+   BEST SELLERS HOME — 2-col mobile card layout
+   ==================================================== */
+@media (max-width: 575px) {
+  .best-sellers .col-6 .product-card {
+    margin-bottom: 0;
+  }
+
+  /* Compact best-seller card on mobile */
+  .best-sellers .product-image {
+    height: 140px !important;
+  }
+  .best-sellers .product-image img {
+    height: 140px !important;
+    object-fit: cover;
+  }
+  .best-sellers .product-title {
+    font-size: 0.8rem !important;
+  }
+  .best-sellers .product-price .current-price {
+    font-size: 0.85rem !important;
+  }
+  .best-sellers .product-price .original-price {
+    font-size: 0.72rem !important;
+  }
+  .best-sellers .product-rating { display: none; }
+  .best-sellers .product-category { display: none; }
+
+  /* Compact add to cart btn */
+  .best-sellers .btn-add-to-cart {
+    padding: 7px 8px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ====================================================
+   RELATED PRODUCTS — 2-col grid on mobile
+   ==================================================== */
+.related-products .row {
+  --bs-gutter-x: 12px;
+  --bs-gutter-y: 12px;
+}
+
+/* ====================================================
+   CART — btn-accent same as btn-irvana
+   ==================================================== */
+.cart .btn-accent {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.cart .btn-accent:hover {
+  background-color: color-mix(in srgb, var(--accent-color), #000 12%) !important;
+  border-color: color-mix(in srgb, var(--accent-color), #000 12%) !important;
+}
+
+
+/* ====================================================
+   HERO BANNER — 2-col buttons on mobile (not stacked)
+   ==================================================== */
+@media (max-width: 767.98px) {
+  .hero .content-col .content .hero-cta {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    justify-content: center;
+  }
+  .hero .content-col .content .hero-cta .btn {
+    width: auto !important;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 12px !important;
+    font-size: 0.85rem !important;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ====================================================
+   DETAIL PAGE — compact image + 2-col buttons mobile
+   ==================================================== */
+@media (max-width: 767px) {
+  .detail-main-img {
+    height: 240px !important;
+    border-radius: 14px !important;
+  }
+
+  .product-details .col-lg-6.mb-5 {
+    margin-bottom: 1rem !important;
+  }
+
+  /* 2-col button layout on mobile */
+  .detail-btn-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .detail-add-to-cart-btn,
+  .detail-cart-link {
+    min-width: unset !important;
+    width: 100% !important;
+    padding: 12px 10px !important;
+    font-size: 0.85rem !important;
+    justify-content: center;
+  }
+
+  /* Quantity selector compact */
+  .quantity-selector.d-flex {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .qty-btn { width: 34px; height: 34px; font-size: 1rem; }
+  .qty-input { width: 46px; height: 34px; font-size: 0.9rem; }
+}
+
+/* ====================================================
+   CART MOBILE — compact single-row item
+   ==================================================== */
+.cart-mobile-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.cart-mobile-name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  text-decoration: none;
+  line-height: 1.3;
+  margin-bottom: 3px;
+  /* clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cart-mobile-name:hover { color: var(--accent-color); }
+
+.cart-mobile-price {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.cart-mobile-qty {
+  width: 52px !important;
+  height: 30px !important;
+  padding: 2px 6px !important;
+  font-size: 0.82rem !important;
+  border-radius: 6px !important;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.cart-mobile-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  white-space: nowrap;
+}
+
+.cart-mobile-remove {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s, background 0.2s;
+}
+.cart-mobile-remove:hover {
+  color: #ef4444;
+  background: #FEE2E2;
+}
+
+/* Cart item separator */
+.cart-item { 
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.cart-item:last-child { border-bottom: none; }
+
+/* ====================================================
+   ALLPRODUCTS — sidebar filter at top on mobile
+   ==================================================== */
+@media (max-width: 991px) {
+  .home-allproducts-row,
+  .row:has(> .col-lg-3.sidebar) {
+    display: flex;
+    flex-direction: column;
+  }
+  .col-lg-3.sidebar {
+    order: -1;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+  .col-lg-9.order-2 {
+    order: 1;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}
+
+/* allproducts filter toggle button visible only on mobile */
+#allproducts-filter-toggle {
+  display: none;
+}
+@media (max-width: 991px) {
+  #allproducts-filter-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  #allproducts-filter-toggle:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+  #allproducts-filter-body.d-none {
+    display: none !important;
+  }
+  #allproducts-filter-body:not(.d-none) {
+    display: block !important;
+  }
+}
+
+/* ====================================================
+   DETAIL PAGE — fix related products 2-col on mobile
+   The earlier rule ".product-details .row { flex-direction:column }"
+   was breaking the related products grid.
+   ==================================================== */
+@media (max-width: 767px) {
+  /* Exception: related products row stays horizontal (flex-row) */
+  .related-products .row {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Each related product card = exactly half width */
+  .related-products .product-item {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
+  }
+}
+
+/* ====================================================
+   VIEW-ALL-BTN — extend to best-sellers section too
+   ==================================================== */
+.best-sellers .view-all-btn,
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--contrast-color) !important;
+  background-color: var(--accent-color);
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.best-sellers .view-all-btn i,
+.view-all-btn i {
+  transition: transform 0.3s ease;
+}
+.best-sellers .view-all-btn:hover,
+.view-all-btn:hover {
+  background-color: color-mix(in srgb, var(--accent-color), #000 10%);
+  color: #fff !important;
+}
+.best-sellers .view-all-btn:hover i,
+.view-all-btn:hover i {
+  transform: translateX(5px);
+}
+
+/* ====================================================
+   DETAIL PAGE — fix features 2-col (same root cause as
+   related products: ".product-details .row" overrides)
+   ==================================================== */
+@media (max-width: 767px) {
+  .product-features .row {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+  .product-features .col-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
+  }
+  .product-features .feature-item {
+    padding: 6px 4px;
+    gap: 6px;
+  }
+  .product-features .feature-item i {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .product-features .feature-item small {
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+}
+
+/* ====================================================
+   CHECKOUT — order summary ABOVE form on mobile
+   ==================================================== */
+@media (max-width: 991px) {
+  .checkout .row {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Summary (col-lg-5) moves to top */
+  .checkout .col-lg-5 {
+    order: -1;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 1.5rem;
+  }
+  /* Form (col-lg-7) stays below */
+  .checkout .col-lg-7 {
+    order: 1;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}
+
+/* ====================================================
+   IRVANA CONTACT PAGE
+   ==================================================== */
+
+/* Info cards */
+.irvana-contact-card {
+  background: var(--surface-color);
+  border-radius: 16px;
+  padding: 24px 16px 20px;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 88%);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+.irvana-contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+  border-color: color-mix(in srgb, var(--accent-color), transparent 60%);
+}
+
+.irvana-contact-icon {
+  width: 56px;
+  height: 56px;
+  background: color-mix(in srgb, var(--accent-color), transparent 88%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  transition: background 0.3s;
+}
+.irvana-contact-card:hover .irvana-contact-icon {
+  background: var(--accent-color);
+}
+.irvana-contact-icon i {
+  font-size: 1.4rem;
+  color: var(--accent-color);
+  transition: color 0.3s;
+}
+.irvana-contact-card:hover .irvana-contact-icon i {
+  color: #fff;
+}
+.irvana-contact-card h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.irvana-contact-card p {
+  font-size: 0.82rem;
+  color: var(--default-color);
+  margin: 0;
+  line-height: 1.5;
+}
+.irvana-contact-card p a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.irvana-contact-card p a:hover { text-decoration: underline; }
+
+/* Form wrapper */
+.irvana-contact-form-wrap {
+  background: var(--surface-color);
+  border-radius: 20px;
+  padding: 36px 36px 32px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+@media (max-width: 575px) {
+  .irvana-contact-form-wrap { padding: 22px 18px 24px; }
+}
+
+.irvana-contact-form-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 6px;
+}
+.irvana-contact-form-title i {
+  color: var(--accent-color);
+}
+
+/* Form inputs */
+.irvana-form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin-bottom: 6px;
+  display: block;
+}
+.irvana-form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--default-color);
+  background: var(--surface-color);
+  transition: border-color 0.25s, box-shadow 0.25s;
+  outline: none;
+  display: block;
+}
+.irvana-form-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color), transparent 80%);
+}
+.irvana-form-input::placeholder { color: #a0aec0; font-size: 0.87rem; }
+textarea.irvana-form-input { resize: vertical; min-height: 130px; }
+
+/* Map */
+.irvana-contact-map-wrap iframe {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  display: block;
+}
+
+/* Quick contact buttons */
+.irvana-contact-quick h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+.irvana-contact-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 10px;
+  transition: all 0.25s ease;
+}
+.irvana-contact-quick-btn i:first-child {
+  font-size: 1.3rem;
+  width: 24px;
+  flex-shrink: 0;
+}
+.irvana-contact-quick-btn span { flex: 1; }
+.irvana-contact-quick-btn .bi-arrow-right {
+  font-size: 1rem;
+  opacity: 0.6;
+  transition: transform 0.25s;
+}
+.irvana-contact-quick-btn:hover .bi-arrow-right {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+.irvana-contact-quick-btn.whatsapp {
+  background: #e7f9ee;
+  color: #1a7a3e;
+  border: 1.5px solid #b7eacc;
+}
+.irvana-contact-quick-btn.whatsapp:hover {
+  background: #25d366;
+  color: #fff;
+  border-color: #25d366;
+}
+.irvana-contact-quick-btn.email {
+  background: color-mix(in srgb, var(--accent-color), transparent 90%);
+  color: var(--accent-color);
+  border: 1.5px solid color-mix(in srgb, var(--accent-color), transparent 75%);
+}
+.irvana-contact-quick-btn.email:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+/* Mobile: compact cards */
+@media (max-width: 575px) {
+  .irvana-contact-card {
+    padding: 16px 10px 14px;
+    border-radius: 12px;
+  }
+  .irvana-contact-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .irvana-contact-icon i { font-size: 1.15rem; }
+  .irvana-contact-card h4 { font-size: 0.75rem; }
+  .irvana-contact-card p  { font-size: 0.72rem; }
+}

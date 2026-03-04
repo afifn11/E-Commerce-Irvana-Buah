@@ -58,7 +58,16 @@
     <div class="container">
       <div class="row">
         <!-- Sidebar Kategori -->
-        <div class="col-lg-3 sidebar">
+        <div class="col-lg-3 sidebar order-1 order-lg-0">
+          <button id="allproducts-filter-toggle" class="d-lg-none w-100 mb-2" style="
+            display:flex;align-items:center;justify-content:space-between;
+            padding:10px 16px;border-radius:10px;border:1.5px solid #ddd;
+            background:#fff;font-weight:600;font-size:0.9rem;cursor:pointer;
+          ">
+            <span><i class="bi bi-funnel me-2"></i>Filter & Kategori</span>
+            <i id="allproducts-filter-icon" class="bi bi-chevron-down"></i>
+          </button>
+          <div id="allproducts-filter-body" class="d-none d-lg-block">
           <div class="widgets-container">
             <!-- Widget Kategori -->
             <div class="product-categories-widget widget-item">
@@ -112,15 +121,16 @@
                   </div>
                 </div>
                 <div class="filter-actions mt-3">
-                  <button type="button" class="btn btn-sm btn-primary w-100 apply-filter-btn">Terapkan Filter</button>
+                  <button type="button" class="btn btn-irvana btn-sm w-100 apply-filter-btn">Terapkan Filter</button>
                 </div>
               </div>
             </div><!-- End Filter Harga -->
           </div>
+          </div><!-- end filter-body -->
         </div><!-- End Sidebar -->
 
         <!-- Daftar Produk -->
-        <div class="col-lg-9">
+        <div class="col-lg-9 order-2 order-lg-1">
           <!-- Filter dan Sorting -->
           <section id="category-header" class="category-header section">
             <div class="container" data-aos="fade-up">
@@ -197,7 +207,7 @@
                         <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
                         <h4 class="mt-3">Tidak ada produk ditemukan</h4>
                         <p class="text-muted">Coba ubah filter pencarian atau kata kunci Anda.</p>
-                        <a href="{{ route('products') }}" class="btn btn-primary">Lihat Semua Produk</a>
+                        <a href="{{ route('products') }}" class="btn btn-irvana">Lihat Semua Produk</a>
                       </div>
                     </div>
                   </div>
@@ -400,6 +410,17 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Mobile filter toggle
+    var filterToggle = document.getElementById('allproducts-filter-toggle');
+    var filterBody = document.getElementById('allproducts-filter-body');
+    var filterIcon = document.getElementById('allproducts-filter-icon');
+    if (filterToggle && filterBody) {
+        filterToggle.addEventListener('click', function() {
+            var isOpen = filterBody.classList.toggle('d-none');
+            filterIcon.className = 'bi bi-chevron-' + (isOpen ? 'down' : 'up');
+        });
+    }
 
     // Quick view functionality
     $('.quick-view-btn').on('click', function() {

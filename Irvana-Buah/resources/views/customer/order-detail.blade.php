@@ -160,7 +160,7 @@
           </div>
 
           <div class="d-grid">
-            <a href="{{ route('products') }}" class="btn btn-success btn-lg rounded-pill">
+            <a href="{{ route('products') }}" class="btn btn-irvana btn-irvana-lg">
               <i class="bi bi-shop me-2"></i>Belanja Lagi
             </a>
           </div>
