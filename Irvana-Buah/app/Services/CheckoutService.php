@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Repositories\Interfaces\CartRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PointsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -21,6 +22,7 @@ class CheckoutService
     public function __construct(
         private readonly CartService              $cartService,
         private readonly CartRepositoryInterface  $cartRepository,
+        private readonly PointsService            $pointsService,
     ) {}
 
     /**
@@ -42,7 +44,16 @@ class CheckoutService
                 $discountAmount = $coupon->calculateDiscount($subtotal);
             }
         }
-        $totalAmount = max(0, $subtotal - $discountAmount);
+        // Apply points redemption
+        $pointsRedeemed  = 0;
+        $pointsDiscount  = 0;
+        if (!empty($checkoutData->redeemPoints) && $checkoutData->redeemPoints > 0) {
+            $maxRedeem      = min($checkoutData->redeemPoints, $this->pointsService->getBalance($userId));
+            $pointsDiscount = $this->pointsService->redeem($userId, $maxRedeem);
+            $pointsRedeemed = $maxRedeem;
+        }
+
+        $totalAmount = max(0, $subtotal - $discountAmount - $pointsDiscount);
 
         return DB::transaction(function () use ($userId, $checkoutData, $cartItems, $totalAmount, $subtotal, $discountAmount, $coupon) {
             $order = Order::create([
@@ -57,6 +68,7 @@ class CheckoutService
                 'notes'            => $checkoutData->notes,
                 'coupon_id'        => $coupon?->id,
                 'discount_amount'  => $discountAmount,
+                'points_redeemed'  => $pointsRedeemed,
             ]);
 
             foreach ($cartItems as $item) {
@@ -82,6 +94,11 @@ class CheckoutService
             }
 
             $this->cartRepository->clearByUser($userId);
+
+            // Award points for this purchase (only if payment is not purely via points)
+            if ($totalAmount > 0) {
+                $this->pointsService->earn($userId, $order);
+            }
 
             // Send order confirmation email
             try {

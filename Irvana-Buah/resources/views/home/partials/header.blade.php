@@ -47,6 +47,12 @@
                       <i class="bi bi-bag-check me-2"></i>
                       <span>Pesanan Saya</span>
                     </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('points.index') }}">
+                      <i class="bi bi-star-fill me-2" style="color:#f59e0b;"></i>
+                      Poin Saya
+                      @php $pb = app(\App\Services\PointsService::class)->getBalance(auth()->id()); @endphp
+                      @if($pb > 0)<span class="ms-auto badge" style="background:#fef3c7;color:#92400e;font-size:.7rem;">{{ number_format($pb) }}</span>@endif
+                    </a>
                     <a class="dropdown-item d-flex align-items-center" href="{{ route('wishlist.index') }}">
                       <i class="bi bi-heart me-2"></i>
                       <span>Wishlist Saya</span>

@@ -191,6 +191,32 @@
                     @endforeach
                   </div>
 
+                  {{-- Poin Loyalitas --}}
+                  @auth
+                  @php $userPoints = \App\Services\PointsService::class; @endphp
+                  @php $pointsBal = app(\App\Services\PointsService::class)->getBalance(Auth::id()); @endphp
+                  @if($pointsBal > 0)
+                  <div class="points-section mb-3" style="padding:12px;background:#f0fdf4;border-radius:12px;border:1px dashed #86efac;">
+                    <div style="font-size:.8rem;font-weight:700;color:#064e3b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">
+                      <i class="bi bi-star-fill me-1" style="color:#f59e0b;"></i>Tukar Poin
+                      <span style="font-weight:400;color:#059669;margin-left:6px;">Saldo: <strong>{{ number_format($pointsBal) }} poin</strong></span>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                      <input type="number" id="redeemPointsInput"
+                             placeholder="Jumlah poin (maks {{ $pointsBal }})"
+                             min="1" max="{{ $pointsBal }}" step="1"
+                             style="flex:1;padding:8px 12px;border:1.5px solid #bbf7d0;border-radius:8px;font-size:.85rem;">
+                      <button type="button" id="applyPointsBtn"
+                              style="padding:8px 16px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;">
+                        Tukar
+                      </button>
+                    </div>
+                    <div id="pointsMsg" style="font-size:.78rem;margin-top:6px;display:none;"></div>
+                    <input type="hidden" name="redeem_points" id="redeemPointsHidden" value="0">
+                  </div>
+                  @endif
+                  @endauth
+
                   {{-- Coupon Input --}}
                   <div class="coupon-section mb-3" style="padding:12px;background:#f8fafc;border-radius:12px;border:1px dashed #cbd5e1;">
                     <div style="font-size:.8rem;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">
@@ -306,6 +332,55 @@ function selectPayment(el, method) {
 </script>
 
 <script>
+(function() {
+    // Points redeem
+    const applyPointsBtn = document.getElementById('applyPointsBtn');
+    const pointsInput    = document.getElementById('redeemPointsInput');
+    const pointsHidden   = document.getElementById('redeemPointsHidden');
+    const pointsMsg      = document.getElementById('pointsMsg');
+    const CSRF           = document.querySelector('meta[name=csrf-token]')?.content || '';
+
+    if (applyPointsBtn) {
+        applyPointsBtn.addEventListener('click', function() {
+            const pts = parseInt(pointsInput.value) || 0;
+            if (pts <= 0) { showPointsMsg('Masukkan jumlah poin yang ingin ditukar.', 'error'); return; }
+
+            fetch('{{ route("points.calculate") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body: JSON.stringify({ points: pts })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.points > 0) {
+                    pointsHidden.value = data.points;
+                    const discRow = document.getElementById('discountRow');
+                    const discLbl = document.getElementById('discountLabel');
+                    const discAmt = document.getElementById('discountAmount');
+                    const totalEl = document.getElementById('displayTotal');
+                    // Update total display
+                    const currentTotal = parseFloat(totalEl.textContent.replace(/[^0-9]/g,''));
+                    const newTotal = Math.max(0, currentTotal - data.rupiah);
+                    if (discRow) { discRow.style.display = 'flex'; discLbl.textContent = 'Poin (' + data.points + ' poin)'; discAmt.textContent = '- Rp ' + data.rupiah.toLocaleString('id-ID'); }
+                    if (totalEl) totalEl.textContent = 'Rp ' + newTotal.toLocaleString('id-ID');
+                    applyPointsBtn.textContent = '✓';
+                    applyPointsBtn.style.background = '#064e3b';
+                    pointsInput.readOnly = true;
+                    showPointsMsg('✓ ' + data.points + ' poin ditukar → diskon ' + data.display, 'success');
+                }
+            })
+            .catch(() => showPointsMsg('Gagal menukar poin.', 'error'));
+        });
+    }
+
+    function showPointsMsg(text, type) {
+        if (!pointsMsg) return;
+        pointsMsg.textContent = text;
+        pointsMsg.style.color = type === 'success' ? '#059669' : '#dc2626';
+        pointsMsg.style.display = 'block';
+    }
+})();
+
 (function() {
     const applyBtn   = document.getElementById('applyCouponBtn');
     const input      = document.getElementById('couponInput');

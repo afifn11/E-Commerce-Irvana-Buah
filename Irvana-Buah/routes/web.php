@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 // ====================================================
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/payment/notification', [Customer\PaymentController::class, 'notification'])->name('payment.notification');
 
 // Shop
 Route::get('/shop',              [HomeController::class, 'products'])->name('products');
@@ -110,6 +111,13 @@ Route::middleware('auth')->group(function () {
 
     // Kupon
     Route::post('/coupon/apply',    [Customer\CouponController::class, 'apply'])->name('coupon.apply');
+
+    // Poin Loyalitas
+    Route::get('/my-points',          [Customer\PointsController::class, 'index'])->name('points.index');
+    Route::post('/points/calculate',  [Customer\PointsController::class, 'calculate'])->name('points.calculate');
+
+    // Midtrans Payment
+    Route::post('/payment/snap/{order}',    [Customer\PaymentController::class, 'createSnap'])->name('payment.snap');
 
     // Wishlist
     Route::get('/wishlist',            [Customer\WishlistController::class, 'index'])->name('wishlist.index');

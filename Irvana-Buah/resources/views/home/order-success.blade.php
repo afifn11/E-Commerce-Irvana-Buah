@@ -114,6 +114,20 @@
           </div>
         </div>
       </div>
-    </section>
+    
+      @if($order->points_earned > 0)
+      <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;padding:20px 24px;margin-top:16px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:2rem;">⭐</div>
+        <div>
+          <div style="font-weight:700;color:#92400e;font-size:.95rem;">Selamat! Anda mendapat poin</div>
+          <div style="font-size:1.4rem;font-weight:900;color:#78350f;">+{{ number_format($order->points_earned) }} poin</div>
+          <div style="font-size:.8rem;color:#92400e;margin-top:2px;">
+            Setara Rp {{ number_format($order->points_earned * 10) }} untuk pembelian berikutnya
+            — <a href="{{ route('points.index') }}" style="color:#0a4db8;">Lihat poin saya</a>
+          </div>
+        </div>
+      </div>
+      @endif
+</section>
 </main>
 @endsection

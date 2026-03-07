@@ -14037,3 +14037,35 @@ textarea.irvana-form-input { resize: vertical; min-height: 130px; }
 .search-form {
     position: relative;
 }
+
+/* ============================================================
+   SESSION 9: FASE 3 — POINTS, PWA, CHATBOT
+   ============================================================ */
+
+/* ── Chatbot FAB position offset from WA button ── */
+@media (max-width: 575px) {
+    .chatbot-fab { bottom: 140px; right: 16px; width: 48px; height: 48px; font-size: 1.1rem; }
+    .chatbot-window { bottom: 200px; }
+}
+
+/* ── Points badge in checkout ── */
+.points-section .form-text { font-size: .75rem; color: #64748b; margin-top: 4px; }
+
+/* ── PWA install prompt (optional) ── */
+.pwa-install-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: #fff; border-top: 2px solid #0a4db8;
+    padding: 14px 20px; display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+    transform: translateY(100%); transition: transform .3s ease;
+}
+.pwa-install-banner.show { transform: translateY(0); }
+.pwa-install-banner img  { width: 44px; height: 44px; border-radius: 10px; }
+.pwa-install-banner .pwa-text { flex: 1; }
+.pwa-install-banner .pwa-text strong { display: block; font-size: .9rem; color: #1e293b; }
+.pwa-install-banner .pwa-text span   { font-size: .78rem; color: #64748b; }
+.pwa-install-btn {
+    padding: 8px 18px; background: #0a4db8; color: #fff;
+    border: none; border-radius: 999px; font-size: .82rem; font-weight: 700; cursor: pointer;
+}
+.pwa-install-close { background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer; padding: 4px; }

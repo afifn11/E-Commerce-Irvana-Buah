@@ -14,6 +14,7 @@ readonly class CheckoutDTO
         public string  $paymentMethod,
         public ?string $notes,
         public ?string $couponCode = null,
+        public int     $redeemPoints = 0,
     ) {}
 
     public static function fromRequest(ProcessCheckoutRequest $request): self
@@ -26,6 +27,7 @@ readonly class CheckoutDTO
             paymentMethod: $request->validated('payment_method'),
             notes:         $request->validated('notes'),
             couponCode:    $request->input('coupon_code'),
+            redeemPoints:  (int) $request->input('redeem_points', 0),
         );
     }
 }

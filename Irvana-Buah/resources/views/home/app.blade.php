@@ -32,6 +32,11 @@
   { "@context": "https://schema.org", "@type": "Organization", "name": "Irvana Buah", "url": "{{ config('app.url') }}", "logo": "{{ asset('assets/img/logo.png') }}", "sameAs": [] }
   </script>
 
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a4db8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Irvana Buah">
   <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
   <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
 
@@ -76,6 +81,15 @@
   <script src="{{ asset('assets/js/main.js') }}"></script>
   @yield('scripts')
 
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW error', err));
+    });
+}
+</script>
 </body>
 
 </html>
