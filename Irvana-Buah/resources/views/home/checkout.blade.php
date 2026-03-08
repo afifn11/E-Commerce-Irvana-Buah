@@ -90,42 +90,40 @@
                   </div>
                   <div class="section-content">
                     <div class="payment-options">
-                      <div class="payment-option active" onclick="selectPayment(this, 'bank_transfer')">
-                        <input type="radio" name="payment_method" id="bank-transfer" value="bank_transfer" checked>
-                        <label for="bank-transfer">
-                          <span class="payment-icon"><i class="bi bi-bank"></i></span>
-                          <span class="payment-label">Transfer Bank</span>
-                        </label>
-                      </div>
-                      <div class="payment-option" onclick="selectPayment(this, 'e_wallet')">
-                        <input type="radio" name="payment_method" id="e-wallet" value="e_wallet">
-                        <label for="e-wallet">
-                          <span class="payment-icon"><i class="bi bi-phone"></i></span>
-                          <span class="payment-label">Dompet Digital (GoPay/OVO)</span>
+                      <div class="payment-option active" onclick="selectPayment(this, 'midtrans')">
+                        <input type="radio" name="payment_method" id="pay-midtrans" value="midtrans" checked>
+                        <label for="pay-midtrans">
+                          <span class="payment-icon">
+                            <i class="bi bi-credit-card-2-front-fill" style="color:#0a4db8;font-size:1.3rem;"></i>
+                          </span>
+                          <span class="payment-label">
+                            Bayar Online
+                            <small class="d-block text-muted" style="font-size:.72rem;font-weight:400;">Transfer Bank, QRIS, GoPay, OVO, Dana, dll</small>
+                          </span>
                         </label>
                       </div>
                       <div class="payment-option" onclick="selectPayment(this, 'cash')">
-                        <input type="radio" name="payment_method" id="cash" value="cash">
-                        <label for="cash">
+                        <input type="radio" name="payment_method" id="pay-cash" value="cash">
+                        <label for="pay-cash">
                           <span class="payment-icon"><i class="bi bi-cash-coin"></i></span>
-                          <span class="payment-label">COD / Bayar di Tempat</span>
+                          <span class="payment-label">
+                            COD / Bayar di Tempat
+                            <small class="d-block text-muted" style="font-size:.72rem;font-weight:400;">Bayar tunai saat pesanan tiba</small>
+                          </span>
                         </label>
                       </div>
                     </div>
 
-                    <div id="bank_transfer-details" class="payment-details mt-3">
-                      <div class="alert alert-info">
-                        <strong><i class="bi bi-info-circle"></i> Informasi Transfer Bank:</strong><br>
-                        BCA: <strong>1234567890</strong> a/n Irvana Buah<br>
-                        Mandiri: <strong>0987654321</strong> a/n Irvana Buah<br>
-                        <small class="text-muted">Konfirmasi pembayaran via WhatsApp: +62 812-3456-7890</small>
-                      </div>
-                    </div>
-                    <div id="e_wallet-details" class="payment-details mt-3 d-none">
-                      <div class="alert alert-info">
-                        <strong><i class="bi bi-phone"></i> Dompet Digital:</strong><br>
-                        GoPay/OVO: <strong>0812-3456-7890</strong> a/n Irvana Buah<br>
-                        <small class="text-muted">Kirim bukti pembayaran via WhatsApp</small>
+                    <div id="midtrans-details" class="payment-details mt-3">
+                      <div class="alert alert-primary" style="background:#eaf0fc;border-color:#c7d7f5;color:#0a4db8;">
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="bi bi-shield-lock-fill fs-5"></i>
+                          <div>
+                            <strong>Pembayaran Online Aman via Midtrans</strong><br>
+                            <small>Tersedia: Transfer Bank (BCA, BRI, Mandiri), QRIS, GoPay, OVO, Dana, ShopeePay, Kartu Kredit/Debit.</small><br>
+                            <small class="text-muted">Popup pembayaran akan muncul setelah Anda mengklik tombol di bawah.</small>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div id="cash-details" class="payment-details mt-3 d-none">
@@ -152,10 +150,10 @@
                       </label>
                     </div>
                     <div class="place-order-container">
-                      <button type="submit" class="btn btn-primary place-order-btn w-100">
-                        <i class="bi bi-bag-check me-2"></i>
-                        <span class="btn-text">Buat Pesanan</span>
-                        <span class="btn-price ms-2">- Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                      <button type="submit" class="btn btn-primary place-order-btn w-100" id="placeOrderBtn">
+                        <i class="bi bi-credit-card me-2" id="placeOrderIcon"></i>
+                        <span class="btn-text" id="placeOrderText">Lanjut ke Pembayaran</span>
+                        <span class="btn-price ms-2" id="placeOrderPrice">- Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                       </button>
                     </div>
                   </div>
@@ -322,64 +320,28 @@
 
 @section('scripts')
 <script>
+// Payment method selector
 function selectPayment(el, method) {
-    document.querySelectorAll('.payment-option').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
     el.classList.add('active');
+    el.querySelector('input[type=radio]').checked = true;
+
+    // Show/hide detail panels
     document.querySelectorAll('.payment-details').forEach(d => d.classList.add('d-none'));
-    const details = document.getElementById(method + '-details');
-    if(details) details.classList.remove('d-none');
+    const detail = document.getElementById(method + '-details');
+    if (detail) detail.classList.remove('d-none');
+
+    // Update button label
+    const icon = document.getElementById('placeOrderIcon');
+    const text = document.getElementById('placeOrderText');
+    if (method === 'cash') {
+        if (icon) { icon.className = 'bi bi-bag-check me-2'; }
+        if (text) text.textContent = 'Buat Pesanan (COD)';
+    } else {
+        if (icon) { icon.className = 'bi bi-credit-card me-2'; }
+        if (text) text.textContent = 'Lanjut ke Pembayaran';
+    }
 }
-</script>
-
-<script>
-(function() {
-    // Points redeem
-    const applyPointsBtn = document.getElementById('applyPointsBtn');
-    const pointsInput    = document.getElementById('redeemPointsInput');
-    const pointsHidden   = document.getElementById('redeemPointsHidden');
-    const pointsMsg      = document.getElementById('pointsMsg');
-    const CSRF           = document.querySelector('meta[name=csrf-token]')?.content || '';
-
-    if (applyPointsBtn) {
-        applyPointsBtn.addEventListener('click', function() {
-            const pts = parseInt(pointsInput.value) || 0;
-            if (pts <= 0) { showPointsMsg('Masukkan jumlah poin yang ingin ditukar.', 'error'); return; }
-
-            fetch('{{ route("points.calculate") }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-                body: JSON.stringify({ points: pts })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.points > 0) {
-                    pointsHidden.value = data.points;
-                    const discRow = document.getElementById('discountRow');
-                    const discLbl = document.getElementById('discountLabel');
-                    const discAmt = document.getElementById('discountAmount');
-                    const totalEl = document.getElementById('displayTotal');
-                    // Update total display
-                    const currentTotal = parseFloat(totalEl.textContent.replace(/[^0-9]/g,''));
-                    const newTotal = Math.max(0, currentTotal - data.rupiah);
-                    if (discRow) { discRow.style.display = 'flex'; discLbl.textContent = 'Poin (' + data.points + ' poin)'; discAmt.textContent = '- Rp ' + data.rupiah.toLocaleString('id-ID'); }
-                    if (totalEl) totalEl.textContent = 'Rp ' + newTotal.toLocaleString('id-ID');
-                    applyPointsBtn.textContent = '✓';
-                    applyPointsBtn.style.background = '#064e3b';
-                    pointsInput.readOnly = true;
-                    showPointsMsg('✓ ' + data.points + ' poin ditukar → diskon ' + data.display, 'success');
-                }
-            })
-            .catch(() => showPointsMsg('Gagal menukar poin.', 'error'));
-        });
-    }
-
-    function showPointsMsg(text, type) {
-        if (!pointsMsg) return;
-        pointsMsg.textContent = text;
-        pointsMsg.style.color = type === 'success' ? '#059669' : '#dc2626';
-        pointsMsg.style.display = 'block';
-    }
-})();
 
 (function() {
     const applyBtn   = document.getElementById('applyCouponBtn');

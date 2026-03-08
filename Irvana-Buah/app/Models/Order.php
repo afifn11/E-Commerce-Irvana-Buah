@@ -25,6 +25,15 @@ class Order extends Model
         'shipping_address',
         'shipping_phone',
         'notes',
+        // Coupon
+        'coupon_id',
+        'discount_amount',
+        // Points
+        'points_redeemed',
+        'points_earned',
+        // Midtrans
+        'midtrans_snap_token',
+        'midtrans_transaction_id',
     ];
 
     protected $casts = [

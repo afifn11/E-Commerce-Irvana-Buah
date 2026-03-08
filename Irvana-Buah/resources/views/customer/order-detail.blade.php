@@ -38,7 +38,7 @@
         $paid     = $payVal === 'paid';
         $payLabel = $paid ? 'Lunas' : ($payVal === 'pending' ? 'Belum Bayar' : 'Gagal');
         $payClass = $paid ? 'bg-success text-white' : ($payVal === 'pending' ? 'bg-warning text-dark' : 'bg-danger text-white');
-        $methodMap = ['bank_transfer' => 'Transfer Bank', 'e_wallet' => 'E-Wallet', 'cash' => 'COD (Bayar di Tempat)'];
+        $methodMap = ['midtrans' => 'Bayar Online (Midtrans)', 'bank_transfer' => 'Transfer Bank', 'e_wallet' => 'E-Wallet', 'cash' => 'COD (Bayar di Tempat)'];
         $methodVal = $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : (string) $order->payment_method;
       @endphp
 
@@ -226,6 +226,11 @@
           <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-header bg-white border-bottom px-4 py-3">
               <h6 class="fw-bold mb-0"><i class="bi bi-credit-card me-2" style="color:var(--accent-color)"></i>Informasi Pembayaran</h6>
+              @if($methodVal === 'midtrans' && !$paid)
+              <a href="{{ route('checkout.success', $order->id) }}" class="btn btn-primary btn-sm rounded-pill ms-auto">
+                <i class="bi bi-credit-card me-1"></i>Bayar Sekarang
+              </a>
+              @endif
             </div>
             <div class="card-body px-4 py-3">
               <div class="d-flex justify-content-between mb-3">

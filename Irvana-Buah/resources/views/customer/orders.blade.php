@@ -98,9 +98,22 @@
                   <span class="text-muted small d-block">Total Pembayaran</span>
                   <span class="fw-bold fs-5" style="color: var(--accent-color)">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                 </div>
-                <a href="{{ route('customer.orders.show', $order->id) }}" class="btn btn-irvana-outline">
-                  <i class="bi bi-eye me-1"></i>Lihat Detail
-                </a>
+                <div class="d-flex gap-2">
+                  @php
+                    $mVal = $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : (string)$order->payment_method;
+                    $pVal = $order->payment_status instanceof \BackedEnum  ? $order->payment_status->value  : (string)$order->payment_status;
+                  @endphp
+                  @if($mVal === 'midtrans' && $pVal !== 'paid')
+                  <a href="{{ route('checkout.success', $order->id) }}"
+                     class="btn btn-primary btn-sm rounded-pill"
+                     style="background:#0a4db8;border:none;">
+                    <i class="bi bi-credit-card me-1"></i>Bayar
+                  </a>
+                  @endif
+                  <a href="{{ route('customer.orders.show', $order->id) }}" class="btn btn-irvana-outline">
+                    <i class="bi bi-eye me-1"></i>Lihat Detail
+                  </a>
+                </div>
               </div>
             </div>
           </div>

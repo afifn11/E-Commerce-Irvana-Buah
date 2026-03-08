@@ -55,7 +55,7 @@ class CheckoutService
 
         $totalAmount = max(0, $subtotal - $discountAmount - $pointsDiscount);
 
-        return DB::transaction(function () use ($userId, $checkoutData, $cartItems, $totalAmount, $subtotal, $discountAmount, $coupon) {
+        return DB::transaction(function () use ($userId, $checkoutData, $cartItems, $totalAmount, $subtotal, $discountAmount, $coupon, $pointsRedeemed) {
             $order = Order::create([
                 'user_id'          => $userId,
                 'order_number'     => OrderNumberGenerator::generate(),

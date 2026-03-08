@@ -4,16 +4,14 @@ namespace App\Enums;
 
 enum PaymentMethod: string
 {
-    case BankTransfer = 'bank_transfer';
-    case EWallet      = 'e_wallet';
-    case Cash         = 'cash';
+    case Midtrans    = 'midtrans';       // Online via Midtrans Snap
+    case Cash        = 'cash';           // COD
 
     public function label(): string
     {
         return match($this) {
-            self::BankTransfer => 'Transfer Bank',
-            self::EWallet      => 'E-Wallet',
-            self::Cash         => 'Tunai',
+            self::Midtrans    => 'Bayar Online (Midtrans)',
+            self::Cash        => 'COD / Bayar di Tempat',
         };
     }
 
@@ -21,4 +19,7 @@ enum PaymentMethod: string
     {
         return array_column(self::cases(), 'value');
     }
+
+    public function isMidtrans(): bool { return $this === self::Midtrans; }
+    public function isCOD(): bool      { return $this === self::Cash; }
 }
