@@ -4,27 +4,23 @@ namespace App\Repositories;
 
 use App\Models\Order;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrderRepository implements OrderRepositoryInterface
 {
     public function getPaginatedWithFilters(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        $query = Order::with(['user', 'orderItems']);
+        $query = Order::with(['user', 'orderItems.product']);
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
-
         if (!empty($filters['payment_status'])) {
             $query->where('payment_status', $filters['payment_status']);
         }
-
         if (!empty($filters['user_id'])) {
             $query->where('user_id', $filters['user_id']);
         }
-
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
@@ -39,7 +35,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findById(int $id): ?Order
     {
-        return Order::with(['user', 'orderItems.product'])->find($id);
+        return Order::with(['user', 'orderItems.product', 'coupon'])->find($id);
     }
 
     public function findByUserOrFail(int $orderId, int $userId): Order
@@ -60,12 +56,17 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getStatistics(): array
     {
+        // Keys disesuaikan dengan yang dipakai di orders/index.blade.php
         return [
-            'total'    => Order::count(),
-            'pending'  => Order::where('status', 'pending')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'revenue'  => Order::where('payment_status', 'paid')->sum('total_amount'),
+            'total_orders'      => Order::count(),
+            'pending_orders'    => Order::where('status', 'pending')->count(),
+            'processing_orders' => Order::where('status', 'processing')->count(),
+            'shipped_orders'    => Order::where('status', 'shipped')->count(),
+            'delivered_orders'  => Order::where('status', 'delivered')->count(),
+            'cancelled_orders'  => Order::where('status', 'cancelled')->count(),
+            'paid_orders'       => Order::where('payment_status', 'paid')->count(),
+            'unpaid_orders'     => Order::where('payment_status', 'pending')->count(),
+            'revenue'           => Order::where('payment_status', 'paid')->sum('total_amount'),
         ];
     }
 
@@ -82,6 +83,6 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function delete(Order $order): bool
     {
-        return $order->delete();
+        return (bool) $order->delete();
     }
 }

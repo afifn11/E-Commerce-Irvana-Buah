@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
-    private const CACHE_TTL    = 300; // 5 minutes
+    private const CACHE_TTL    = 30; // 30 detik - lebih real-time
     private const CACHE_KEY    = 'dashboard_data';
 
     public function getStatistics(): array

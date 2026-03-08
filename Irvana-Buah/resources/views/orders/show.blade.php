@@ -1,370 +1,395 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('admin.orders.index') }}" 
-                   class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                    <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    <span>Kembali</span>
-                </a>
-                <div class="w-px h-6 bg-gray-300"></div>
-                <h2 class="font-bold text-2xl text-gray-900 leading-tight">
-                    Detail Order
-                </h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <div>
+                <p class="breadcrumb">
+                    <a href="{{ route('dashboard') }}">Dashboard</a><span class="breadcrumb-sep">/</span>
+                    <a href="{{ route('admin.orders.index') }}">Pesanan</a><span class="breadcrumb-sep">/</span>
+                    <span style="font-family:var(--font-mono)">{{ $order->order_number }}</span>
+                </p>
+                <h2 class="page-title">Detail Pesanan</h2>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-ghost btn-sm">← Kembali</a>
+                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST"
+                      onsubmit="return confirm('Hapus pesanan {{ addslashes($order->order_number) }}? Tindakan ini tidak bisa dibatalkan.')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Hapus
+                    </button>
+                </form>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8" x-data="{ showDeleteModal: false, orderToDelete: null, orderNumber: '' }">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <!-- Order Header Card -->
-            <div class="bg-white shadow-xl rounded-2xl overflow-hidden mb-8">
-                <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-6">
-                    <div class="flex justify-between items-start">
+    <div class="dashboard-body">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            @php
+                $statusVal = $order->status instanceof \BackedEnum  ? $order->status->value  : (string)$order->status;
+                $payVal    = $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : (string)$order->payment_status;
+                $methodVal = $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : (string)$order->payment_method;
+
+                $statusColors = [
+                    'pending'    => ['bg'=>'rgba(251,191,36,.15)',  'color'=>'#fbbf24', 'border'=>'rgba(251,191,36,.3)'],
+                    'processing' => ['bg'=>'rgba(96,165,250,.15)',  'color'=>'#60a5fa', 'border'=>'rgba(96,165,250,.3)'],
+                    'shipped'    => ['bg'=>'rgba(192,132,252,.15)', 'color'=>'#c084fc', 'border'=>'rgba(192,132,252,.3)'],
+                    'delivered'  => ['bg'=>'rgba(52,211,153,.15)',  'color'=>'#34d399', 'border'=>'rgba(52,211,153,.3)'],
+                    'cancelled'  => ['bg'=>'rgba(248,113,113,.15)', 'color'=>'#f87171', 'border'=>'rgba(248,113,113,.3)'],
+                ];
+                $payColors = [
+                    'paid'     => ['bg'=>'rgba(52,211,153,.15)',  'color'=>'#34d399', 'border'=>'rgba(52,211,153,.3)'],
+                    'pending'  => ['bg'=>'rgba(251,191,36,.15)',  'color'=>'#fbbf24', 'border'=>'rgba(251,191,36,.3)'],
+                    'failed'   => ['bg'=>'rgba(248,113,113,.15)', 'color'=>'#f87171', 'border'=>'rgba(248,113,113,.3)'],
+                    'refunded' => ['bg'=>'rgba(156,163,175,.15)', 'color'=>'#9ca3af', 'border'=>'rgba(156,163,175,.3)'],
+                ];
+                $sc = $statusColors[$statusVal] ?? $statusColors['pending'];
+                $pc = $payColors[$payVal]       ?? $payColors['pending'];
+            @endphp
+
+            {{-- Header Banner --}}
+            <div class="table-wrap mb-5" style="padding:28px 32px;background:linear-gradient(135deg,#0d1f4d 0%,#0a1530 100%);border-color:rgba(96,165,250,.2);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+                    <div>
+                        <div style="font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:8px;">Nomor Pesanan</div>
+                        <div style="font-size:1.8rem;font-weight:800;color:#fff;font-family:var(--font-mono);letter-spacing:1px;line-height:1;">
+                            {{ $order->order_number }}
+                        </div>
+                        <div style="margin-top:8px;font-size:.8rem;color:rgba(255,255,255,.4);">
+                            ID #{{ $order->id }} &bull; {{ $order->created_at->format('d M Y, H:i') }} WIB
+                            &bull; {{ $order->created_at->diffForHumans() }}
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <span id="badge-status" style="padding:8px 18px;border-radius:24px;font-size:.82rem;font-weight:700;
+                            background:{{ $sc['bg'] }};color:{{ $sc['color'] }};border:1px solid {{ $sc['border'] }};">
+                            ● {{ \App\Enums\OrderStatus::from($statusVal)->label() }}
+                        </span>
+                        <span id="badge-pay" style="padding:8px 18px;border-radius:24px;font-size:.82rem;font-weight:700;
+                            background:{{ $pc['bg'] }};color:{{ $pc['color'] }};border:1px solid {{ $pc['border'] }};">
+                            @if($payVal === 'paid') ✓ @elseif($payVal === 'pending') ⏳ @elseif($payVal === 'failed') ✗ @endif
+                            {{ \App\Enums\PaymentStatus::from($payVal)->label() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+
+                {{-- UPDATE STATUS PANEL --}}
+                <div class="table-wrap" style="padding:22px 24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                        <div style="width:32px;height:32px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                            <svg class="w-4 h-4" style="color:#60a5fa" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </div>
+                        <h4 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0;">Update Status</h4>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:14px;">
                         <div>
-                            <h1 class="text-3xl font-bold text-white mb-2">{{ $order->order_number }}</h1>
-                            <p class="text-white/80 text-sm">Order ID: #{{ $order->id }}</p>
+                            <label style="font-size:.72rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Status Pesanan</label>
+                            <select id="sel-status" style="width:100%;padding:9px 12px;border:1px solid var(--glass-border);border-radius:8px;font-size:.85rem;background:var(--surface);color:var(--text-primary);">
+                                @foreach(\App\Enums\OrderStatus::cases() as $s)
+                                    <option value="{{ $s->value }}" {{ $statusVal === $s->value ? 'selected' : '' }}>{{ $s->label() }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <!-- Order Status -->
-                            @switch($order->status instanceof \BackedEnum ? $order->status->value : $order->status)
-                                @case('pending')
-                                    <span class="bg-yellow-500/20 backdrop-blur-sm text-yellow-100 px-4 py-2 rounded-full text-sm font-medium border border-yellow-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                                            <span>Pending</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('processing')
-                                    <span class="bg-blue-500/20 backdrop-blur-sm text-blue-100 px-4 py-2 rounded-full text-sm font-medium border border-blue-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                                            <span>Diproses</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('shipped')
-                                    <span class="bg-purple-500/20 backdrop-blur-sm text-purple-100 px-4 py-2 rounded-full text-sm font-medium border border-purple-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                                            <span>Dikirim</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('delivered')
-                                    <span class="bg-green-500/20 backdrop-blur-sm text-green-100 px-4 py-2 rounded-full text-sm font-medium border border-green-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                                            <span>Selesai</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('cancelled')
-                                    <span class="bg-red-500/20 backdrop-blur-sm text-red-100 px-4 py-2 rounded-full text-sm font-medium border border-red-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-2 h-2 bg-red-400 rounded-full"></div>
-                                            <span>Dibatalkan</span>
-                                        </div>
-                                    </span>
-                                    @break
-                            @endswitch
-
-                            <!-- Payment Status -->
-                            @switch($order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status)
-                                @case('pending')
-                                    <span class="bg-orange-500/20 backdrop-blur-sm text-orange-100 px-4 py-2 rounded-full text-sm font-medium border border-orange-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <span>Menunggu Bayar</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('paid')
-                                    <span class="bg-green-500/20 backdrop-blur-sm text-green-100 px-4 py-2 rounded-full text-sm font-medium border border-green-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            <span>Lunas</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('failed')
-                                    <span class="bg-red-500/20 backdrop-blur-sm text-red-100 px-4 py-2 rounded-full text-sm font-medium border border-red-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            <span>Gagal</span>
-                                        </div>
-                                    </span>
-                                    @break
-                                @case('refunded')
-                                    <span class="bg-gray-500/20 backdrop-blur-sm text-gray-100 px-4 py-2 rounded-full text-sm font-medium border border-gray-500/30">
-                                        <div class="flex items-center space-x-2">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
-                                            </svg>
-                                            <span>Refund</span>
-                                        </div>
-                                    </span>
-                                    @break
-                            @endswitch
+                        <div>
+                            <label style="font-size:.72rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Status Pembayaran</label>
+                            <select id="sel-pay" style="width:100%;padding:9px 12px;border:1px solid var(--glass-border);border-radius:8px;font-size:.85rem;background:var(--surface);color:var(--text-primary);">
+                                @foreach(\App\Enums\PaymentStatus::cases() as $p)
+                                    <option value="{{ $p->value }}" {{ $payVal === $p->value ? 'selected' : '' }}>{{ $p->label() }}</option>
+                                @endforeach
+                            </select>
                         </div>
+                        <button id="btn-save" onclick="saveStatus()" class="btn btn-primary" style="width:100%;justify-content:center;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+                            Simpan Perubahan Status
+                        </button>
+                        <div id="status-msg" style="display:none;font-size:.82rem;padding:9px 13px;border-radius:8px;text-align:center;"></div>
                     </div>
                 </div>
 
-                <div class="p-8">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- Customer Information -->
-                        <div class="space-y-6">
-                            <!-- Customer Details -->
-                            <div class="bg-gray-50 rounded-xl p-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Informasi Pelanggan</label>
-                                <div class="space-y-3">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">{{ $order->user->name }}</p>
-                                            <p class="text-sm text-gray-600">{{ $order->user->email }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Payment Information -->
-                            <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Informasi Pembayaran</label>
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-600">Metode Pembayaran:</span>
-                                        <span class="font-medium text-gray-900 capitalize">
-                                            @switch($order->payment_method instanceof \BackedEnum ? $order->payment_method->value : $order->payment_method)
-                                                @case('cash')
-                                                    Tunai
-                                                    @break
-                                                @case('credit_card')
-                                                    Kartu Kredit
-                                                    @break
-                                                @case('bank_transfer')
-                                                    Transfer Bank
-                                                    @break
-                                                @case('e_wallet')
-                                                    E-Wallet
-                                                    @break
-                                                @default
-                                                    {{ $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : $order->payment_method }}
-                                            @endswitch
-                                        </span>
-                                    </div>
-                                    <div class="border-t pt-3">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-lg font-semibold text-gray-700">Total:</span>
-                                            <span class="text-2xl font-bold text-green-600">Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Timestamps -->
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gray-50 rounded-xl p-4">
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Dibuat</label>
-                                    <p class="text-sm font-medium text-gray-900">{{ $order->created_at->format('d M Y') }}</p>
-                                    <p class="text-xs text-gray-600">{{ $order->created_at->format('H:i') }}</p>
-                                </div>
-                                <div class="bg-gray-50 rounded-xl p-4">
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Diupdate</label>
-                                    <p class="text-sm font-medium text-gray-900">{{ $order->updated_at->format('d M Y') }}</p>
-                                    <p class="text-xs text-gray-600">{{ $order->updated_at->format('H:i') }}</p>
-                                </div>
-                            </div>
+                {{-- INFO PELANGGAN --}}
+                <div class="table-wrap" style="padding:22px 24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                        <div style="width:32px;height:32px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                            <svg class="w-4 h-4" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
+                        <h4 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0;">Info Pelanggan</h4>
+                    </div>
 
-                        <!-- Shipping Information -->
-                        <div class="space-y-6">
-                            <!-- Shipping Address -->
-                            <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Alamat Pengiriman</label>
-                                <div class="space-y-3">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mt-1">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-gray-900 font-medium leading-relaxed">{{ $order->shipping_address }}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">{{ $order->shipping_phone }}</p>
-                                            <p class="text-sm text-gray-600">Nomor telepon</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Order Items -->
-                            <div class="bg-purple-50 rounded-xl p-4 border border-purple-100">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Item Pesanan</label>
-                                <div class="space-y-3">
-                                    @if($order->orderItems && $order->orderItems->count() > 0)
-                                        @foreach($order->orderItems as $item)
-                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                                <div class="flex items-center space-x-3">
-                                                    <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <p class="font-medium text-gray-900">{{ $item->product->name ?? 'Produk tidak ditemukan' }}</p>
-                                                        <p class="text-sm text-gray-600">Qty: {{ $item->quantity }} × Rp{{ number_format($item->price, 0, ',', '.') }}</p>
-                                                    </div>
-                                                </div>
-                                                <p class="font-semibold text-purple-600">Rp{{ number_format($item->quantity * $item->price, 0, ',', '.') }}</p>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div class="text-center py-4">
-                                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                            </svg>
-                                            <p class="text-gray-500 font-medium">Tidak ada item</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
+                    <div style="display:flex;flex-direction:column;gap:0;">
+                        @php $rows = [
+                            ['Nama',  $order->user->name ?? 'N/A'],
+                            ['Email', $order->user->email ?? '-'],
+                            ['Telepon', $order->shipping_phone ?? '-'],
+                        ] @endphp
+                        @foreach($rows as [$label, $val])
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:.8rem;color:var(--text-muted);">{{ $label }}</span>
+                            <span style="font-size:.84rem;font-weight:600;color:var(--text-primary);text-align:right;max-width:60%;">{{ $val }}</span>
                         </div>
+                        @endforeach
+                        <div style="padding:10px 0;">
+                            <span style="font-size:.8rem;color:var(--text-muted);display:block;margin-bottom:5px;">Alamat Pengiriman</span>
+                            <span style="font-size:.84rem;color:var(--text-secondary);line-height:1.6;">{{ $order->shipping_address ?? '-' }}</span>
+                        </div>
+                        @if($order->notes)
+                        <div style="margin-top:10px;padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.15);border-radius:8px;">
+                            <span style="font-size:.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">📝 Catatan</span>
+                            <span style="font-size:.83rem;color:var(--text-secondary);">{{ $order->notes }}</span>
+                        </div>
+                        @endif
                     </div>
                 </div>
+
+                {{-- INFO PEMBAYARAN --}}
+                <div class="table-wrap" style="padding:22px 24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                        <div style="width:32px;height:32px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                            <svg class="w-4 h-4" style="color:#c084fc" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        </div>
+                        <h4 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0;">Info Pembayaran</h4>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:0;">
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:.8rem;color:var(--text-muted);">Metode</span>
+                            <span style="font-size:.84rem;font-weight:600;color:var(--text-primary);">
+                                @switch($methodVal)
+                                    @case('midtrans') 🏦 Online (Midtrans) @break
+                                    @case('cash')     💵 COD / Tunai       @break
+                                    @default          {{ $methodVal }}
+                                @endswitch
+                            </span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:.8rem;color:var(--text-muted);">Status Bayar</span>
+                            <span id="pay-badge-detail" style="font-size:.8rem;font-weight:700;padding:4px 12px;border-radius:20px;
+                                background:{{ $pc['bg'] }};color:{{ $pc['color'] }};border:1px solid {{ $pc['border'] }};">
+                                {{ \App\Enums\PaymentStatus::from($payVal)->label() }}
+                            </span>
+                        </div>
+                        @if(($order->discount_amount ?? 0) > 0)
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:.8rem;color:var(--text-muted);">Diskon Kupon</span>
+                            <span style="font-size:.84rem;color:#34d399;font-weight:600;">− Rp{{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                        </div>
+                        @endif
+                        @if(($order->points_redeemed ?? 0) > 0)
+                        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:.8rem;color:var(--text-muted);">Poin Ditukar</span>
+                            <span style="font-size:.84rem;color:#34d399;font-weight:600;">{{ $order->points_redeemed }} poin (− Rp{{ number_format($order->points_redeemed * 10, 0, ',', '.') }})</span>
+                        </div>
+                        @endif
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                            <span style="font-size:.9rem;font-weight:700;color:var(--text-primary);">Total Bayar</span>
+                            <span style="font-size:1.2rem;font-weight:800;color:var(--accent);">Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                        </div>
+                        @if($order->midtrans_transaction_id)
+                        <div style="margin-top:6px;padding:10px 14px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:8px;">
+                            <span style="font-size:.7rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:3px;">Midtrans TID</span>
+                            <span style="font-size:.78rem;color:var(--text-secondary);font-family:var(--font-mono);word-break:break-all;">{{ $order->midtrans_transaction_id }}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- TIMELINE --}}
+                <div class="table-wrap" style="padding:22px 24px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                        <div style="width:32px;height:32px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                            <svg class="w-4 h-4" style="color:#fbbf24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        </div>
+                        <h4 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0;">Alur Pesanan</h4>
+                    </div>
+                    @php
+                        $steps = ['pending'=>'Menunggu', 'processing'=>'Diproses', 'shipped'=>'Dikirim', 'delivered'=>'Selesai'];
+                        $stepKeys = array_keys($steps);
+                        $currIdx  = array_search($statusVal, $stepKeys) ?? -1;
+                    @endphp
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                    @foreach($steps as $key => $label)
+                    @php $idx = array_search($key, $stepKeys); $done = $idx <= $currIdx; $active = $idx === $currIdx; @endphp
+                    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;{{ !$loop->last ? 'border-bottom:1px solid var(--glass-border);' : '' }}">
+                        <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;
+                            {{ $active ? 'background:#60a5fa;color:#fff;box-shadow:0 0 0 4px rgba(96,165,250,.2);' : ($done ? 'background:rgba(52,211,153,.2);color:#34d399;' : 'background:rgba(255,255,255,.05);color:var(--text-muted);') }}">
+                            {{ $done ? ($active ? ($idx+1) : '✓') : ($idx+1) }}
+                        </div>
+                        <div>
+                            <span style="font-size:.84rem;font-weight:{{ $active ? '700' : '500' }};color:{{ $done ? 'var(--text-primary)' : 'var(--text-muted)' }};">{{ $label }}</span>
+                            @if($active) <span style="display:block;font-size:.72rem;color:#60a5fa;font-weight:600;margin-top:2px;">← Status saat ini</span> @endif
+                        </div>
+                    </div>
+                    @endforeach
+                    @if($statusVal === 'cancelled')
+                    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;margin-top:4px;border-top:1px solid var(--glass-border);">
+                        <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:rgba(248,113,113,.2);color:#f87171;">✗</div>
+                        <span style="font-size:.84rem;font-weight:700;color:#f87171;">Dibatalkan <span style="font-size:.72rem;font-weight:500;color:var(--text-muted);"> ← Status saat ini</span></span>
+                    </div>
+                    @endif
+                    </div>
+                </div>
+
+            </div>{{-- end grid 2-col --}}
+
+            {{-- ITEM PESANAN --}}
+            <div class="table-wrap mb-6">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;">
+                    <h4 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0;">
+                        Item Pesanan
+                        <span style="font-size:.78rem;font-weight:400;color:var(--text-muted);margin-left:6px;">({{ $order->orderItems->count() }} produk)</span>
+                    </h4>
+                </div>
+                @if($order->orderItems->isEmpty())
+                    <div class="empty-state" style="padding:2rem;">
+                        <p class="empty-state-title">Tidak ada item</p>
+                    </div>
+                @else
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th style="text-align:center;">Qty</th>
+                                <th style="text-align:right;">Harga Satuan</th>
+                                <th style="text-align:right;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($order->orderItems as $item)
+                        @php $product = $item->product; @endphp
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <img src="{{ $product?->image_url ?? '' }}" alt="{{ $product?->name }}"
+                                         style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--glass-border);"
+                                         onerror="this.style.display='none'">
+                                    <div>
+                                        <p style="font-size:.85rem;font-weight:600;color:var(--text-primary);margin:0;">{{ $product?->name ?? 'Produk dihapus' }}</p>
+                                        <p style="font-size:.74rem;color:var(--text-muted);margin:0;">ID: {{ $item->product_id }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align:center;">
+                                <span style="font-size:.85rem;font-weight:700;color:var(--text-primary);">{{ $item->quantity }} kg</span>
+                            </td>
+                            <td style="text-align:right;">
+                                <span style="font-size:.84rem;color:var(--text-secondary);">Rp{{ number_format($item->price, 0, ',', '.') }}</span>
+                            </td>
+                            <td style="text-align:right;">
+                                <span style="font-size:.85rem;font-weight:700;color:var(--accent);">Rp{{ number_format($item->quantity * $item->price, 0, ',', '.') }}</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            @if(($order->discount_amount ?? 0) > 0)
+                            <tr>
+                                <td colspan="3" style="text-align:right;font-size:.82rem;color:var(--text-muted);">Diskon Kupon</td>
+                                <td style="text-align:right;font-size:.84rem;color:#34d399;font-weight:600;">− Rp{{ number_format($order->discount_amount, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
+                            @if(($order->points_redeemed ?? 0) > 0)
+                            <tr>
+                                <td colspan="3" style="text-align:right;font-size:.82rem;color:var(--text-muted);">Poin ({{ $order->points_redeemed }} pts)</td>
+                                <td style="text-align:right;font-size:.84rem;color:#34d399;font-weight:600;">− Rp{{ number_format($order->points_redeemed * 10, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
+                            <tr style="border-top:2px solid var(--glass-border);">
+                                <td colspan="3" style="text-align:right;font-size:.92rem;font-weight:700;color:var(--text-primary);padding-top:12px;">TOTAL</td>
+                                <td style="text-align:right;font-size:1.05rem;font-weight:800;color:var(--accent);padding-top:12px;">Rp{{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                @endif
             </div>
 
-            <!-- Notes Card -->
-            @if($order->notes)
-                <div class="bg-white shadow-xl rounded-2xl overflow-hidden mb-8">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-4 border-b">
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
-                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>Catatan Order</span>
-                        </h3>
-                    </div>
-                    <div class="p-8">
-                        <div class="prose max-w-none">
-                            <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ $order->notes }}</p>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Action Buttons -->
-            <div class="bg-white shadow-xl rounded-2xl p-6">
-                <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                    <a href="{{ route('admin.orders.index') }}"
-                       class="group flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                        <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        <span class="font-medium">Kembali ke Daftar Order</span>
-                    </a>
-                    
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('admin.orders.edit', $order->id) }}"
-                           class="group flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 text-sm rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                            <span class="font-medium">Edit Order</span>
-                        </a>
-                        
-                        <!-- Form Delete dengan hidden untuk modal -->
-                        <form id="delete-order-form" action="{{ route('admin.orders.destroy', $order->id) }}"
-                              method="POST" class="inline" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                        
-                        <!-- Delete Button yang memicu modal -->
-                        <button @click="showDeleteModal = true; orderToDelete = document.getElementById('delete-order-form'); orderNumber = '{{ $order->order_number }}'" 
-                                class="group flex items-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 text-sm rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                            <span class="font-medium">Hapus Order</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Delete Confirmation Modal --}}
-        <div x-show="showDeleteModal" 
-             x-transition:enter="ease-out duration-300" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" 
-             x-transition:leave-start="opacity-100" 
-             x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" 
-             style="display: none;">
-            <div x-show="showDeleteModal" 
-                 x-transition:enter="ease-out duration-300" 
-                 x-transition:enter-start="opacity-0 scale-95" 
-                 x-transition:enter-end="opacity-100 scale-100" 
-                 x-transition:leave="ease-in duration-200" 
-                 x-transition:leave-start="opacity-100 scale-100" 
-                 x-transition:leave-end="opacity-0 scale-95" 
-                 class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
-                <div class="p-6 text-center">
-                    {{-- Warning Icon --}}
-                    <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.667-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                        </svg>
-                    </div>
-
-                    {{-- Warning Title --}}
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Konfirmasi Penghapusan</h3>
-
-                    {{-- Warning Message --}}
-                    <p class="text-gray-600 mb-6">
-                        Apakah Anda yakin ingin menghapus order <strong x-text="orderNumber"></strong>?
-                        <br><span class="text-sm text-red-600 font-medium">Tindakan ini tidak dapat dibatalkan.</span>
-                    </p>
-
-                    {{-- Action Buttons --}}
-                    <div class="flex space-x-3 justify-center">
-                        <button @click="showDeleteModal = false" 
-                                class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-xl hover:bg-gray-300 transition-all duration-300">
-                            Batal
-                        </button>
-                        <button @click="if(orderToDelete) orderToDelete.submit()" 
-                                class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            Ya, Hapus Order
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
+
+    {{-- Toast --}}
+    <div id="toast-show" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none;padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.4);min-width:220px;"></div>
+
+    @push('scripts')
+    <script>
+    const CSRF    = document.querySelector('meta[name=csrf-token]')?.content ?? '';
+    const orderId = {{ $order->id }};
+
+    const PAY_COLORS = {
+        paid:     { bg:'rgba(52,211,153,.15)',  color:'#34d399', border:'rgba(52,211,153,.3)',  label:'✓ Sudah Dibayar' },
+        pending:  { bg:'rgba(251,191,36,.15)',  color:'#fbbf24', border:'rgba(251,191,36,.3)',  label:'⏳ Menunggu Pembayaran' },
+        failed:   { bg:'rgba(248,113,113,.15)', color:'#f87171', border:'rgba(248,113,113,.3)', label:'✗ Gagal' },
+        refunded: { bg:'rgba(156,163,175,.15)', color:'#9ca3af', border:'rgba(156,163,175,.3)', label:'↩ Dikembalikan' },
+    };
+    const STATUS_COLORS = {
+        pending:    { bg:'rgba(251,191,36,.15)',  color:'#fbbf24', border:'rgba(251,191,36,.3)',  label:'● Menunggu' },
+        processing: { bg:'rgba(96,165,250,.15)',  color:'#60a5fa', border:'rgba(96,165,250,.3)',  label:'● Diproses' },
+        shipped:    { bg:'rgba(192,132,252,.15)', color:'#c084fc', border:'rgba(192,132,252,.3)', label:'● Dikirim' },
+        delivered:  { bg:'rgba(52,211,153,.15)',  color:'#34d399', border:'rgba(52,211,153,.3)',  label:'● Selesai' },
+        cancelled:  { bg:'rgba(248,113,113,.15)', color:'#f87171', border:'rgba(248,113,113,.3)', label:'● Dibatalkan' },
+    };
+
+    function showToast(msg, ok = true) {
+        const t = document.getElementById('toast-show');
+        t.textContent = msg;
+        t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:600;min-width:220px;display:block;box-shadow:0 8px 32px rgba(0,0,0,.4);${
+            ok ? 'background:#0a2e1a;color:#34d399;border:1px solid #145228;'
+               : 'background:#2e0c0c;color:#f87171;border:1px solid #4d1515;'
+        }`;
+        clearTimeout(t._to);
+        t._to = setTimeout(() => t.style.display = 'none', 3500);
+    }
+
+    function setBadge(id, color, label) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.background = color.bg;
+        el.style.color      = color.color;
+        el.style.borderColor = color.border;
+        el.textContent      = label;
+    }
+
+    async function saveStatus() {
+        const btn       = document.getElementById('btn-save');
+        const statusVal = document.getElementById('sel-status').value;
+        const payVal    = document.getElementById('sel-pay').value;
+        const msg       = document.getElementById('status-msg');
+
+        btn.disabled    = true;
+        btn.innerHTML   = '<span style="opacity:.6">⏳ Menyimpan...</span>';
+        msg.style.display = 'none';
+
+        try {
+            const [r1, r2] = await Promise.all([
+                fetch(`/admin/orders/${orderId}/status`, {
+                    method:'PATCH', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'},
+                    body: JSON.stringify({ status: statusVal }),
+                }),
+                fetch(`/admin/orders/${orderId}/payment-status`, {
+                    method:'PATCH', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'},
+                    body: JSON.stringify({ payment_status: payVal }),
+                }),
+            ]);
+
+            const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+
+            if (d1.success && d2.success) {
+                setBadge('badge-status', STATUS_COLORS[statusVal], STATUS_COLORS[statusVal]?.label ?? statusVal);
+                setBadge('badge-pay',    PAY_COLORS[payVal],       PAY_COLORS[payVal]?.label    ?? payVal);
+                setBadge('pay-badge-detail', PAY_COLORS[payVal],   PAY_COLORS[payVal]?.label    ?? payVal);
+                showToast('✓ Status berhasil diperbarui');
+            } else {
+                showToast('✗ ' + (d1.message || d2.message || 'Gagal menyimpan'), false);
+            }
+        } catch(e) {
+            showToast('✗ Koneksi gagal', false);
+        } finally {
+            btn.disabled  = false;
+            btn.innerHTML = '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg> Simpan Perubahan Status';
+        }
+    }
+    </script>
+    @endpush
+
 </x-app-layout>
