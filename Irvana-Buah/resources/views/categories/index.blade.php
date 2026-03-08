@@ -12,7 +12,7 @@
         </div>
     </x-slot>
 
-    <div class="dashboard-body" x-data="{ '{' } showDeleteModal: false, itemToDelete: null, itemName: '' { '}' }">
+    <div class="dashboard-body" x-data="{ showDeleteModal: false, itemToDelete: null, itemName: '' }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             @if (session('success'))
@@ -87,8 +87,8 @@
                                         <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline">
                                             @csrf @method('DELETE')
                                             <button type="button" class="table-action-btn delete" title="Hapus"
-                                                x-on:click="showDeleteModal = true; itemToDelete = $event.target.closest('form'); itemName = '{{ $category->name }}'">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                x-on:click="showDeleteModal = true; itemToDelete = $el.closest('form'); itemName = '{{ addslashes($category->name) }}'">
+                                                <svg class="w-3.5 h-3.5" style="pointer-events:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             </button>
                                         </form>
                                     </div>

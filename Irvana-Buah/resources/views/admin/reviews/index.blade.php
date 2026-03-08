@@ -131,12 +131,10 @@
                                     <button type="button" class="table-action-btn view" title="Balas" onclick="toggleReply({{ $review->id }})">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                                     </button>
-                                    <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="inline" onsubmit="return confirm('Hapus ulasan ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="table-action-btn delete" title="Hapus">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="table-action-btn delete" title="Hapus"
+                                        onclick="confirmDelete('{{ route('admin.reviews.destroy', $review) }}', '{{ e($review->user->name ?? '-') }}')">
+                                        <svg class="w-3.5 h-3.5" style="pointer-events:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -150,10 +148,36 @@
             </div>
 
         </div>
+
+        {{-- Delete Modal --}}
+        <div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;">
+            <div style="background:rgba(12,17,24,.97);border:1px solid var(--glass-border-strong);border-radius:var(--radius-2xl);padding:2rem;max-width:26rem;width:100%;text-align:center;box-shadow:var(--shadow-lg);">
+                <div style="width:52px;height:52px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;color:var(--danger)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.667-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </div>
+                <h3 style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:.5rem;">Hapus Ulasan?</h3>
+                <p style="font-size:.84rem;color:var(--text-secondary);margin-bottom:1.5rem;">
+                    Ulasan dari <strong id="deleteModalName" style="color:var(--text-primary);"></strong> akan dihapus permanen.
+                </p>
+                <div style="display:flex;gap:.75rem;justify-content:center;">
+                    <button onclick="document.getElementById('deleteModal').style.display='none'" class="btn btn-ghost">Batal</button>
+                    <button onclick="document.getElementById('deleteForm').submit()" class="btn btn-danger">Ya, Hapus</button>
+                </div>
+            </div>
+        </div>
+        <form id="deleteForm" method="POST" style="display:none;">
+            @csrf @method('DELETE')
+        </form>
+
     </div>
 </x-app-layout>
 
 <script>
+function confirmDelete(url, name) {
+    document.getElementById('deleteForm').action = url;
+    document.getElementById('deleteModalName').textContent = name;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
 function toggleReply(id) {
     const el = document.getElementById('reply-' + id);
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
