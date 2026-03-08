@@ -28,12 +28,34 @@
                 </x-modal>
             @endif
 
+            {{-- Stats --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="stat-icon-wrap"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg></div>
+                    <div class="stat-meta">Total Kupon</div>
+                    <div class="stat-value">{{ $coupons->count() }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap" style="background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.15);color:var(--success)"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg></div>
+                    <div class="stat-meta">Aktif</div>
+                    <div class="stat-value">{{ $coupons->where('is_active', true)->count() }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.15);color:var(--info)"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+                    <div class="stat-meta">Total Dipakai</div>
+                    <div class="stat-value">{{ $coupons->sum('usage_count') }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap" style="background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.15);color:var(--danger)"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                    <div class="stat-meta">Kadaluarsa</div>
+                    <div class="stat-value">{{ $coupons->filter(fn($c) => $c->expires_at && $c->expires_at->isPast())->count() }}</div>
+                </div>
+            </div>
+
             <div class="table-wrap">
                 @if($coupons->isEmpty())
                     <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                        </div>
+                        <div class="empty-state-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg></div>
                         <p class="empty-state-title">Belum ada kupon</p>
                         <p class="empty-state-text">Buat kupon promo pertama Anda</p>
                         <a href="{{ route('admin.coupons.create') }}" class="btn btn-primary btn-sm" style="margin-top:1rem;">Buat Kupon</a>
@@ -53,39 +75,28 @@
                         @foreach($coupons as $c)
                         <tr>
                             <td>
-                                <span style="font-family:var(--font-mono);font-size:0.85rem;font-weight:700;color:var(--accent);background:rgba(99,102,241,0.08);padding:3px 10px;border-radius:6px;letter-spacing:.04em;">
-                                    {{ $c->code }}
-                                </span>
-                                @if($c->description)
-                                    <p style="font-size:0.74rem;color:var(--text-muted);margin-top:4px;">{{ $c->description }}</p>
-                                @endif
+                                <span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--accent);background:rgba(99,102,241,.08);padding:3px 10px;border-radius:6px;letter-spacing:.04em;">{{ $c->code }}</span>
+                                @if($c->description)<p style="font-size:.74rem;color:var(--text-muted);margin-top:4px;">{{ $c->description }}</p>@endif
                             </td>
                             <td>
-                                <span class="badge {{ $c->type === 'percent' ? 'badge-blue' : 'badge-green' }}">
-                                    <span class="badge-dot"></span>
-                                    {{ $c->type === 'percent' ? 'Persen' : 'Nominal' }}
-                                </span>
-                                <p style="font-size:0.84rem;font-weight:700;color:var(--text-primary);margin-top:4px;">
+                                <span class="badge {{ $c->type === 'percent' ? 'badge-blue' : 'badge-green' }}"><span class="badge-dot"></span>{{ $c->type === 'percent' ? 'Persen' : 'Nominal' }}</span>
+                                <p style="font-size:.84rem;font-weight:700;color:var(--text-primary);margin-top:4px;">
                                     {{ $c->formatted_value }}
-                                    @if($c->type === 'percent' && $c->max_discount)
-                                        <span style="font-weight:400;font-size:0.75rem;color:var(--text-muted);">(maks Rp {{ number_format($c->max_discount,0,',','.') }})</span>
-                                    @endif
+                                    @if($c->type === 'percent' && $c->max_discount)<span style="font-weight:400;font-size:.75rem;color:var(--text-muted);">(maks Rp {{ number_format($c->max_discount,0,',','.') }})</span>@endif
                                 </p>
                             </td>
-                            <td style="font-size:0.84rem;color:var(--text-primary);">
-                                {{ $c->min_order > 0 ? 'Rp '.number_format($c->min_order,0,',','.') : '-' }}
-                            </td>
-                            <td style="font-size:0.84rem;">
+                            <td style="font-size:.84rem;">{{ $c->min_order > 0 ? 'Rp '.number_format($c->min_order,0,',','.') : '—' }}</td>
+                            <td style="font-size:.84rem;">
                                 <span style="font-weight:600;color:var(--text-primary);">{{ $c->usage_count }}</span>
                                 <span style="color:var(--text-muted);">{{ $c->usage_limit ? ' / '.$c->usage_limit : ' / ∞' }}</span>
                             </td>
-                            <td style="font-size:0.8rem;">
+                            <td style="font-size:.8rem;">
                                 @if($c->expires_at)
                                     @if($c->expires_at->isPast())
                                         <span class="badge badge-red">Kadaluarsa</span>
                                     @else
                                         <span style="color:var(--text-primary);">{{ $c->expires_at->format('d M Y') }}</span>
-                                        <p style="font-size:0.72rem;color:var(--text-muted);">{{ $c->expires_at->diffForHumans() }}</p>
+                                        <p style="font-size:.72rem;color:var(--text-muted);">{{ $c->expires_at->diffForHumans() }}</p>
                                     @endif
                                 @else
                                     <span style="color:var(--text-muted);">Tidak ada batas</span>
@@ -94,8 +105,8 @@
                             <td style="text-align:center;">
                                 <label style="display:inline-flex;align-items:center;cursor:pointer;">
                                     <input type="checkbox" class="coupon-toggle sr-only" data-id="{{ $c->id }}" {{ $c->is_active ? 'checked' : '' }}>
-                                    <div class="toggle-track {{ $c->is_active ? 'toggle-on' : '' }}" style="width:36px;height:20px;border-radius:10px;background:{{ $c->is_active ? 'var(--success)' : 'var(--border)' }};position:relative;transition:background .2s;">
-                                        <div style="position:absolute;top:2px;left:{{ $c->is_active ? '18px' : '2px' }};width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+                                    <div class="toggle-track {{ $c->is_active ? 'toggle-on' : '' }}" style="width:36px;height:20px;border-radius:10px;background:{{ $c->is_active ? 'var(--success)' : 'rgba(255,255,255,.12)' }};position:relative;transition:background .2s;">
+                                        <div style="position:absolute;top:2px;left:{{ $c->is_active ? '18px' : '2px' }};width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>
                                     </div>
                                 </label>
                             </td>
@@ -137,7 +148,7 @@ document.querySelectorAll('.coupon-toggle').forEach(function(checkbox) {
         })
         .then(r => r.json())
         .then(data => {
-            track.style.background = data.is_active ? 'var(--success)' : 'var(--border)';
+            track.style.background = data.is_active ? 'var(--success)' : 'rgba(255,255,255,.12)';
             dot.style.left = data.is_active ? '18px' : '2px';
         });
     });
