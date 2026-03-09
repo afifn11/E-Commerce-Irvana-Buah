@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Customer;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,7 @@ Route::get('/api/discount-stats',        [HomeController::class, 'getDiscountSta
 Route::get('/api/trending-discounts',    [HomeController::class, 'getTrendingDiscounts'])->name('api.trending.discounts');
 Route::get('/api/best-sellers',          [HomeController::class, 'getBestSellerProductsJson'])->name('api.best-sellers');
 Route::get('/api/products-by-category',  [HomeController::class, 'getProductsByCategoryJson'])->name('api.products.by.category');
+Route::post('/api/chatbot',               [ChatbotController::class, 'message'])->name('api.chatbot');
 
 // ====================================================
 // CART ROUTES
