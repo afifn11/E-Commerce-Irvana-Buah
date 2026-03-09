@@ -21,6 +21,8 @@ class User extends Authenticatable
         'role',
         'phone_number',
         'address',
+        'google_id',   // ← tambah
+        'avatar',      // ← tambah
     ];
 
     protected $hidden = [
@@ -75,5 +77,13 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return ! $this->isAdmin();
+    }
+
+    /**
+     * Apakah user ini login via OAuth (tidak punya password lokal).
+     */
+    public function isSocialOnly(): bool
+    {
+        return is_null($this->password);
     }
 }
