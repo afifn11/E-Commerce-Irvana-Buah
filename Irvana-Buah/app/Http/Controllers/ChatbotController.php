@@ -42,18 +42,17 @@ class ChatbotController extends Controller
 
     protected function handleHealthQuery(string $userMessage): JsonResponse
     {
-        $apiKey = config('services.anthropic.key');
+        $apiKey = config('services.gemini.key');
 
         if (empty($apiKey)) {
-            Log::error('Chatbot: ANTHROPIC_API_KEY tidak ditemukan di .env');
-            return $this->fallbackResponse('API key tidak dikonfigurasi.');
+            Log::error('Chatbot: GEMINI_API_KEY tidak ditemukan di .env');
+            return $this->fallbackResponse();
         }
 
         $products = Product::with('category')->active()->inStock()->get()
             ->map(fn($p) => [
                 'name'       => $p->name,
                 'category'   => $p->category?->name ?? '',
-                'slug'       => $p->slug,
                 'price'      => 'Rp ' . number_format((float)$p->price, 0, ',', '.'),
                 'detail_url' => route('product.detail', $p->slug),
                 'image_url'  => $p->image_url,
@@ -63,7 +62,7 @@ class ChatbotController extends Controller
             ->map(fn($p) => "- {$p['name']} ({$p['category']}) — {$p['price']}")
             ->join("\n");
 
-        $systemPrompt = <<<PROMPT
+        $prompt = <<<PROMPT
 Kamu adalah asisten kesehatan dan nutrisi buah untuk toko buah online "Irvana Buah".
 Tugasmu: memberikan rekomendasi buah yang tepat berdasarkan kondisi kesehatan atau kebutuhan pengguna, HANYA dari daftar produk yang tersedia di toko.
 
@@ -75,31 +74,44 @@ Instruksi penting:
 2. Jelaskan secara singkat MENGAPA buah tersebut bermanfaat (kandungan nutrisinya).
 3. Rekomendasikan 2-4 buah yang PALING relevan dari daftar produk di atas.
 4. Untuk setiap rekomendasi, sebutkan nama buah persis seperti di daftar produk.
-5. Di akhir jawaban, tuliskan tag khusus ini PERSIS seperti formatnya:
+5. Di akhir jawaban, tuliskan tag ini PERSIS seperti formatnya (wajib ada):
    [PRODUK_REKOMENDASI: nama_buah_1, nama_buah_2, nama_buah_3]
 6. Jika tidak ada produk yang relevan, tulis [PRODUK_REKOMENDASI: tidak_ada]
-7. Jawaban maksimal 200 kata, padat dan informatif.
+7. Jawaban HARUS singkat, maksimal 150 kata — jangan bertele-tele.
+8. WAJIB sertakan tag [PRODUK_REKOMENDASI] di akhir, jangan sampai terlupa.
+
+Pertanyaan pengguna: {$userMessage}
 PROMPT;
 
         try {
             $response = Http::withHeaders([
-                'x-api-key'         => $apiKey,
-                'anthropic-version' => '2023-06-01',
-                'Content-Type'      => 'application/json',
-            ])->timeout(25)->post('https://api.anthropic.com/v1/messages', [
-                'model'      => 'claude-haiku-4-5-20251001',
-                'max_tokens' => 600,
-                'system'     => $systemPrompt,
-                'messages'   => [['role' => 'user', 'content' => $userMessage]],
-            ]);
+                'Content-Type' => 'application/json',
+            ])->timeout(25)->post(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey,
+                [
+                    'contents' => [
+                        ['parts' => [['text' => $prompt]]]
+                    ],
+                    'generationConfig' => [
+                        'maxOutputTokens' => 2048,
+                        'temperature'     => 0.7,
+                    ],
+                ]
+            );
 
             if (!$response->successful()) {
-                Log::error('Chatbot API error', ['status' => $response->status(), 'body' => $response->body()]);
+                Log::error('Chatbot Gemini error', ['status' => $response->status(), 'body' => $response->body()]);
                 return $this->fallbackResponse();
             }
 
-            $aiText = $response->json('content.0.text', '');
+            $aiText = $response->json('candidates.0.content.parts.0.text', '');
 
+            if (empty($aiText)) {
+                Log::error('Chatbot Gemini: empty response', ['body' => $response->body()]);
+                return $this->fallbackResponse();
+            }
+
+            // Extract produk rekomendasi
             $recommendedProducts = [];
             if (preg_match('/\[PRODUK_REKOMENDASI:\s*(.+?)\]/', $aiText, $matches)) {
                 $names = array_map('trim', explode(',', $matches[1]));
@@ -113,7 +125,7 @@ PROMPT;
                 }
             }
 
-            $cleanText = trim(preg_replace('/\[PRODUK_REKOMENDASI:.*?\]/', '', $aiText));
+            $cleanText = trim(preg_replace('/\[PRODUK_REKOMENDASI:.*?\]/s', '', $aiText));
 
             return response()->json([
                 'type'     => 'health',
@@ -127,7 +139,7 @@ PROMPT;
         }
     }
 
-    protected function fallbackResponse(string $reason = ''): JsonResponse
+    protected function fallbackResponse(): JsonResponse
     {
         return response()->json([
             'type'     => 'health',
