@@ -1745,6 +1745,152 @@ h6 {
   .footer .social-icons {
     justify-content: center;
   }
+
+  /* ════════════════════════════════════════
+     MOBILE FOOTER — Modern Accordion Style
+     ════════════════════════════════════════ */
+
+  .footer .footer-main {
+    padding: 28px 0 16px;
+  }
+
+  /* Brand block — compact horizontal */
+  .footer-about {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0,0,0,.07);
+    margin-bottom: 4px;
+  }
+  .footer-about p {
+    font-size: .82rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Contact items inline */
+  .footer .footer-main .footer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .footer .footer-main .footer-contact .contact-item {
+    font-size: .8rem;
+  }
+
+  /* Social row right after brand */
+  .footer-about .social-links-inline {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .footer-about .social-links-inline a {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #f0f5ff;
+    border: 1px solid #dce8ff;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-color);
+    font-size: .9rem;
+    text-decoration: none;
+    transition: background .2s;
+  }
+  .footer-about .social-links-inline a:hover {
+    background: var(--accent-color);
+    color: #fff;
+  }
+
+  /* Hide original social + jam operasional widget on mobile */
+  .footer-widget:not(.footer-about) .social-links,
+  .footer-widget:not(.footer-about) > p:first-of-type {
+    display: none;
+  }
+
+  /* Remove Bootstrap row gap on mobile for accordion */
+  .footer .footer-main .row {
+    --bs-gutter-y: 0 !important;
+    margin-top: 0 !important;
+  }
+  .footer .footer-main .row > * {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  /* Brand block bottom spacing only */
+  .footer .footer-main .footer-about {
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+  }
+
+  /* Accordion: link widgets */
+  .footer-widget:not(.footer-about) {
+    border-bottom: 1px solid rgba(0,0,0,.07);
+    padding: 0;
+    margin-bottom: 0;
+  }
+  .footer-widget:not(.footer-about) h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: .9rem;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .footer-widget:not(.footer-about) h4::after {
+    content: '\F282'; /* bi-chevron-down */
+    font-family: 'bootstrap-icons';
+    font-size: .85rem;
+    color: #aaa;
+    transition: transform .25s;
+  }
+  .footer-widget:not(.footer-about) h4.open::after {
+    transform: rotate(180deg);
+  }
+  .footer-widget:not(.footer-about) .footer-links {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+    padding-bottom: 0;
+  }
+  .footer-widget:not(.footer-about) h4.open + .footer-links,
+  .footer-widget:not(.footer-about) h4.open ~ .footer-links {
+    max-height: 300px;
+    padding-bottom: 14px;
+  }
+  .footer-widget:not(.footer-about) .footer-links li {
+    padding: 3px 0;
+  }
+  .footer-widget:not(.footer-about) .footer-links a {
+    font-size: .85rem;
+  }
+  .footer-widget:not(.footer-about) .footer-links a::before {
+    display: none;
+  }
+
+  /* Footer bottom — compact */
+  .footer .footer-bottom {
+    padding: 16px 0 12px;
+  }
+  .footer .footer-bottom .payment-methods {
+    gap: 10px;
+    font-size: .8rem;
+    margin-bottom: 10px;
+  }
+  .footer .footer-bottom .legal-links {
+    gap: 12px;
+    padding: 12px 0 10px;
+    font-size: .78rem;
+  }
+  .footer .footer-bottom .copyright p {
+    font-size: .78rem;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -1819,7 +1965,110 @@ h6 {
 /* Mobile: susun vertikal rapi */
 @media (max-width: 767px) {
   .scroll-top { right: 16px; width: 38px; height: 38px; }
-  .scroll-top.active { bottom: 148px; }
+  .scroll-top.active { bottom: 220px; } /* above bottom nav */
+}
+
+/* ════════════════════════════════════════
+   BOTTOM NAVIGATION BAR — Mobile Only
+   ════════════════════════════════════════ */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Show bottom nav */
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #eef0f8;
+    box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+    z-index: 9995;
+    align-items: stretch;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: .62rem;
+    font-weight: 600;
+    position: relative;
+    transition: color .2s;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  .bottom-nav-item i {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+  .bottom-nav-item.active,
+  .bottom-nav-item:active {
+    color: var(--accent-color);
+  }
+  .bottom-nav-item .bn-badge {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    margin-left: 4px;
+    min-width: 16px;
+    height: 16px;
+    background: #ef4444;
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 700;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .bottom-nav-item .bn-badge[data-count="0"],
+  .bottom-nav-item .bn-badge:empty {
+    display: none;
+  }
+
+  /* Indicator line for active tab */
+  .bottom-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 2px;
+    background: var(--accent-color);
+    border-radius: 0 0 4px 4px;
+  }
+
+  /* Add padding to page content so bottom nav doesn't cover it */
+  body { padding-bottom: 60px !important; }
+
+  /* Lift all FABs above bottom nav */
+  .wa-float        { bottom: 76px !important; }
+  .chatbot-fab     { bottom: 144px !important; }
+  .scroll-top.active { bottom: 216px !important; }
+
+  /* Hide hamburger and header-nav on mobile — bottom nav replaces them */
+  .mobile-nav-toggle,
+  #wishlistHeaderBtn,
+  .header .header-nav { display: none !important; }
+
+  /* Hide account dropdown and cart from top navbar — already in bottom nav */
+  .header .account-dropdown,
+  #cartHeaderBtn { display: none !important; }
+
+  /* Keep only logo + search in top navbar */
+  .header .main-header .header-actions {
+    gap: 0 !important;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -2165,9 +2414,24 @@ section,
   }
 
   .hero .content-col .content .hero-features {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 1.2rem;
+  }
+
+  .hero .content-col .content .hero-features .feature-item {
+    background: #f0f5ff;
+    border: 1px solid #dce8ff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    gap: 6px;
+    font-size: .82rem;
+  }
+
+  .hero .content-col .content .hero-features .feature-item i {
+    font-size: 1rem;
   }
 
   .hero .image-col .hero-image .floating-product {
@@ -2263,8 +2527,62 @@ section,
 }
 
 @media (max-width: 767px) {
+  /* ── Info Cards: 2x2 compact grid ── */
+  .info-cards {
+    padding: 20px 0;
+  }
+  .info-cards .row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px !important;
+    padding: 0 4px;
+  }
+  .info-cards .col-12 {
+    width: 100% !important;
+    flex: unset !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
   .info-cards .info-card {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 12px;
+    background: #fff;
+    border: 1px solid #eef0f8;
+    border-radius: 16px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    gap: 8px;
+  }
+  .info-cards .info-card:hover {
+    transform: none;
+  }
+  .info-cards .info-card .icon-box {
+    margin: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f0f5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .info-cards .info-card .icon-box i {
+    font-size: 1.4rem;
+    color: var(--accent-color);
+  }
+  .info-cards .info-card h3 {
+    font-size: .85rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    line-height: 1.3;
+  }
+  /* Sembunyikan deskripsi di mobile — terlalu panjang untuk card kecil */
+  .info-cards .info-card p {
+    display: none;
   }
 }
 
@@ -12717,25 +13035,76 @@ section,
   transform: translateY(0);
 }
 
-.detail-cart-link {
+/* Beli Sekarang — orange/green accent to differentiate from cart */
+.detail-buy-now-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 13px 24px;
+  padding: 14px 28px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 12px;
-  border: 2px solid var(--accent-color);
-  color: var(--accent-color);
-  background: transparent;
-  text-decoration: none;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(249,115,22,0.30);
   transition: all 0.3s ease;
+  text-decoration: none;
+}
+.detail-buy-now-btn:hover {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(249,115,22,0.40);
+  color: #fff;
+}
+.detail-buy-now-btn:active { transform: translateY(0); }
+.detail-buy-now-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* Stock badge pill */
+.stock-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: .88rem;
+  color: #475569;
 }
 
-.detail-cart-link:hover {
-  background: var(--accent-color);
-  color: #fff;
+/* Wishlist pill button */
+.wishlist-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all .25s;
+  white-space: nowrap;
+}
+.wishlist-pill-btn:hover {
+  border-color: #f43f5e;
+  color: #f43f5e;
+  background: #fff1f4;
+}
+.wishlist-pill-btn.wishlisted,
+.wishlist-pill-btn.active {
+  border-color: #f43f5e;
+  color: #f43f5e;
+  background: #fff1f4;
+}
+.wishlist-pill-btn.wishlisted i,
+.wishlist-pill-btn.active i {
+  font-weight: 900;
 }
 
 /* Qty buttons — match template style */
@@ -12801,7 +13170,7 @@ section,
   }
 
   .detail-add-to-cart-btn,
-  .detail-cart-link {
+  .detail-buy-now-btn {
     width: 100%;
     min-width: unset;
     justify-content: center;

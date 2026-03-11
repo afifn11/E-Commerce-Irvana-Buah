@@ -129,7 +129,124 @@
 }
 </style>
 
-    
+    {{-- ═══ MOBILE PROMO STRIP (hanya tampil di mobile, di bawah hero) ═══ --}}
+    @if($discountedProducts->count() > 0)
+    <section class="mobile-promo-strip d-lg-none">
+      <div class="mps-header">
+        <span class="mps-label">🔥 Promo Hari Ini</span>
+        <a href="{{ route('discount.products') }}" class="mps-see-all">Lihat Semua <i class="bi bi-chevron-right"></i></a>
+      </div>
+      <div class="mps-scroll-track">
+        @foreach($discountedProducts->take(6) as $product)
+        <a href="{{ route('product.detail', $product->slug) }}" class="mps-card">
+          <div class="mps-badge">-{{ $product->discount_percentage }}%</div>
+          <img src="{{ $product->image_url }}"
+               alt="{{ $product->name }}"
+               onerror="this.src='{{ asset('assets/img/fruits/default-fruit.webp') }}'">
+          <div class="mps-name">{{ Str::limit($product->name, 16) }}</div>
+          <div class="mps-price-new">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</div>
+          <div class="mps-price-old">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+        </a>
+        @endforeach
+      </div>
+    </section>
+    @endif
+
+    <style>
+    /* ── Hide floating cards on mobile (terlalu berantakan) ── */
+    @media (max-width: 767.98px) {
+      .hero .image-col { display: none !important; }
+      .hero .content-col { flex: 0 0 100%; max-width: 100%; }
+    }
+
+    /* ── Mobile Promo Strip ── */
+    .mobile-promo-strip {
+      background: #fff;
+      padding: 14px 0 18px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .mps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px 10px;
+    }
+    .mps-label {
+      font-size: .95rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .mps-see-all {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .mps-scroll-track {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 16px 6px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .mps-scroll-track::-webkit-scrollbar { display: none; }
+    .mps-card {
+      flex: 0 0 110px;
+      scroll-snap-align: start;
+      background: #f8faff;
+      border: 1px solid #eef0f8;
+      border-radius: 14px;
+      padding: 10px 8px 10px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .mps-card:active { transform: scale(.97); }
+    .mps-badge {
+      position: absolute;
+      top: 7px; left: 7px;
+      background: #ef4444;
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+    .mps-card img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    .mps-name {
+      font-size: .76rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .mps-price-new {
+      font-size: .8rem;
+      font-weight: 700;
+      color: #ef4444;
+    }
+    .mps-price-old {
+      font-size: .7rem;
+      color: #aaa;
+      text-decoration: line-through;
+    }
+    </style>
+
     <section id="info-cards" class="info-cards section light-background">
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">

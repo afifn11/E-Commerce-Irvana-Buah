@@ -22,6 +22,14 @@
                   <span>info@irvanabuah.com</span>
                 </div>
               </div>
+              {{-- Social icons inline for mobile (desktop still uses the widget below) --}}
+              <div class="social-links-inline d-lg-none mt-3">
+                <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+              </div>
             </div>
           </div>
 
@@ -122,3 +130,69 @@
 @include('home.partials.chatbot')
 @include('home.partials.whatsapp-widget')
 @include('home.partials.search-autocomplete')
+
+{{-- ═══ BOTTOM NAVIGATION BAR — mobile only ═══ --}}
+<nav class="bottom-nav d-md-none" id="bottomNav">
+  <a href="{{ route('home') }}" class="bottom-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+    <i class="bi bi-house"></i>
+    <span>Home</span>
+  </a>
+  <a href="{{ route('products') }}" class="bottom-nav-item {{ request()->routeIs('products*') || request()->routeIs('discount*') || request()->routeIs('best*') ? 'active' : '' }}">
+    <i class="bi bi-grid"></i>
+    <span>Toko</span>
+  </a>
+  @auth
+  <a href="{{ route('wishlist.index') }}" class="bottom-nav-item {{ request()->routeIs('wishlist*') ? 'active' : '' }}">
+    <i class="bi bi-heart"></i>
+    <span>Wishlist</span>
+    @php $wlMobile = \App\Models\Wishlist::where('user_id', Auth::id())->count(); @endphp
+    @if($wlMobile > 0)<span class="bn-badge">{{ $wlMobile }}</span>@endif
+  </a>
+  @else
+  <a href="{{ route('login') }}" class="bottom-nav-item">
+    <i class="bi bi-heart"></i>
+    <span>Wishlist</span>
+  </a>
+  @endauth
+  <a href="{{ route('cart.index') }}" class="bottom-nav-item {{ request()->routeIs('cart*') ? 'active' : '' }}">
+    <i class="bi bi-cart3"></i>
+    <span>Keranjang</span>
+    @auth
+      @php $cartMobile = \App\Models\Cart::where('user_id', Auth::id())->sum('quantity'); @endphp
+      @if($cartMobile > 0)<span class="bn-badge">{{ $cartMobile }}</span>@endif
+    @endauth
+  </a>
+  @auth
+  <a href="{{ route('customer.profile') }}" class="bottom-nav-item {{ request()->routeIs('customer.profile') ? 'active' : '' }}">
+    <i class="bi bi-person"></i>
+    <span>Akun</span>
+  </a>
+  @else
+  <a href="{{ route('login') }}" class="bottom-nav-item">
+    <i class="bi bi-person"></i>
+    <span>Masuk</span>
+  </a>
+  @endauth
+</nav>
+
+<script>
+// Footer accordion — mobile only
+(function() {
+  function initFooterAccordion() {
+    if (window.innerWidth >= 768) return;
+    document.querySelectorAll('.footer-widget:not(.footer-about) h4').forEach(h4 => {
+      if (h4.dataset.accInited) return;
+      h4.dataset.accInited = '1';
+      h4.addEventListener('click', function() {
+        const isOpen = this.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.footer-widget:not(.footer-about) h4').forEach(el => el.classList.remove('open'));
+        // Toggle current
+        if (!isOpen) this.classList.add('open');
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initFooterAccordion);
+  window.addEventListener('resize', initFooterAccordion);
+})();
+</script>

@@ -1,6 +1,5 @@
-const CACHE_NAME    = 'irvana-buah-v3';
+const CACHE_NAME    = 'irvana-buah-v5';
 const STATIC_ASSETS = [
-  '/assets/css/main.css',
   '/assets/img/logo.webp',
   '/assets/img/favicon.png',
   '/assets/vendor/bootstrap/css/bootstrap.min.css',
@@ -28,20 +27,33 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
 
-  // Fix: hanya handle GET - biarkan POST/PUT/DELETE/PATCH lewat langsung
   if (request.method !== 'GET') return;
 
-  // Skip cross-origin (Midtrans JS, external fonts, dll)
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Skip semua route sensitif
   const skipPaths = [
     '/admin', '/cart', '/checkout', '/payment',
     '/coupon', '/review', '/points', '/login',
     '/register', '/logout', '/api',
   ];
   if (skipPaths.some(p => url.pathname.startsWith(p))) return;
+
+  // CSS & JS — selalu network-first agar update langsung ter-apply
+  if (/\.(css|js)(\?|$)/.test(url.pathname)) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(c => c.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
 
   if (request.mode === 'navigate') {
     // Network-first untuk halaman HTML
@@ -57,13 +69,13 @@ self.addEventListener('fetch', event => {
         .catch(() => caches.match(request).then(r => r || caches.match('/')))
     );
   } else {
-    // Cache-first hanya untuk file statis
+    // Cache-first hanya untuk gambar/font
     event.respondWith(
       caches.match(request).then(cached => {
         if (cached) return cached;
         return fetch(request).then(response => {
           if (response.ok && response.status === 200 &&
-              /\.(css|js|png|webp|jpg|jpeg|woff2?|svg|ico)(\?|$)/.test(request.url)) {
+              /\.(png|webp|jpg|jpeg|woff2?|svg|ico)(\?|$)/.test(request.url)) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(c => c.put(request, clone));
           }

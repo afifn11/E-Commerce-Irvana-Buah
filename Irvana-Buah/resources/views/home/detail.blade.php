@@ -9,6 +9,83 @@
 
 @section('body_class', 'product-details-page')
 
+@section('styles')
+<style>
+/* ── Stock + Wishlist row ── */
+.product-stock-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.stock-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: .88rem;
+    color: #475569;
+}
+.wishlist-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: .88rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all .25s;
+    white-space: nowrap;
+}
+.wishlist-pill-btn:hover,
+.wishlist-pill-btn.active,
+.wishlist-pill-btn.wishlisted {
+    border-color: #f43f5e;
+    color: #f43f5e;
+    background: #fff1f4;
+}
+
+/* ── Beli Sekarang button ── */
+.detail-buy-now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff !important;
+    border: none;
+    cursor: pointer;
+    min-width: 180px;
+    box-shadow: 0 4px 14px rgba(249,115,22,.35);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+.detail-buy-now-btn:hover {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249,115,22,.45);
+    color: #fff !important;
+}
+.detail-buy-now-btn:active  { transform: translateY(0); }
+.detail-buy-now-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+@media (max-width: 767px) {
+    .detail-buy-now-btn { width: 100%; min-width: unset; }
+    .product-stock-row  { gap: 8px; }
+}
+</style>
+@endsection
+
 @section('content')
 <main class="main">
 
@@ -111,25 +188,22 @@
               </div>
               @endif
 
-              <!-- Stock Info -->
-              <div class="product-stock mb-3">
-                <span class="text-muted"><i class="bi bi-box-seam me-1"></i>Stok: 
+              <!-- Stock Info + Wishlist -->
+              <div class="d-flex align-items-center gap-3 flex-wrap mb-4">
+                <span class="stock-badge-pill">
+                  <i class="bi bi-box-seam me-1"></i>Stok:
                   <strong class="{{ $product->is_low_stock ? 'text-warning' : 'text-success' }}">
                     {{ $product->stock }} kg tersedia
                   </strong>
                 </span>
-              </div>
-
-              {{-- Wishlist toggle --}}
-              @auth
-              <div class="mb-3">
-                <button type="button" class="irvana-action-btn detail-wishlist-btn" 
-                        data-wishlist-id="{{ $product->id }}"
-                        style="background:#f7f9ff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 18px;font-size:.88rem;font-weight:600;color:#64748b;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all .25s;">
-                  <i class="bi bi-heart"></i> Simpan ke Wishlist
+                @auth
+                <button type="button" class="wishlist-pill-btn detail-wishlist-btn"
+                        data-wishlist-id="{{ $product->id }}">
+                  <i class="bi bi-heart"></i>
+                  <span>Simpan ke Wishlist</span>
                 </button>
+                @endauth
               </div>
-              @endauth
 
               @if($product->stock > 0)
               <!-- Add to Cart -->
@@ -148,9 +222,10 @@
                             data-product-id="{{ $product->id }}">
                       <i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang
                     </button>
-                    <a href="{{ route('cart.index') }}" class="detail-cart-link">
-                      <i class="bi bi-cart3 me-1"></i>Keranjang
-                    </a>
+                    <button type="button" class="detail-buy-now-btn" id="buyNowBtn"
+                            data-product-id="{{ $product->id }}">
+                      <i class="bi bi-lightning-fill me-2"></i>Beli Sekarang
+                    </button>
                   </div>
                 @else
                   <a href="{{ route('login') }}" class="detail-add-to-cart-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">
@@ -278,6 +353,42 @@ document.getElementById('addToCartBtn')?.addEventListener('click', function() {
     .catch(() => {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang';
+    });
+});
+
+// Beli Sekarang — add to cart then redirect to checkout
+document.getElementById('buyNowBtn')?.addEventListener('click', function() {
+    const productId = this.dataset.productId;
+    const quantity  = document.getElementById('product-quantity').value;
+    const btn       = this;
+    btn.disabled    = true;
+    btn.innerHTML   = '<i class="bi bi-hourglass me-2"></i>Memproses...';
+
+    fetch('{{ route("cart.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+        },
+        body: JSON.stringify({ product_id: productId, quantity: parseInt(quantity) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById('cart-badge').textContent = data.cart_count;
+            btn.innerHTML = '<i class="bi bi-check me-2"></i>Mengarahkan...';
+            window.location.href = '{{ url("/cart/checkout") }}';
+        } else {
+            const msg = document.getElementById('cart-message');
+            msg.innerHTML = '<div class="alert alert-danger py-2 rounded-3"><i class="bi bi-x-circle me-1"></i>' + data.message + '</div>';
+            btn.disabled  = false;
+            btn.innerHTML = '<i class="bi bi-lightning-fill me-2"></i>Beli Sekarang';
+            setTimeout(() => msg.innerHTML = '', 3000);
+        }
+    })
+    .catch(() => {
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="bi bi-lightning-fill me-2"></i>Beli Sekarang';
     });
 });
 

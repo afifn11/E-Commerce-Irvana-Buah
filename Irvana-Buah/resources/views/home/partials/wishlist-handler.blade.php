@@ -20,7 +20,7 @@
 
     // Delegate click on all wishlist buttons
     document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.irvana-action-btn[data-wishlist-id], .btn-wishlist-toggle[data-wishlist-id]');
+        const btn = e.target.closest('.irvana-action-btn[data-wishlist-id], .btn-wishlist-toggle[data-wishlist-id], .wishlist-pill-btn[data-wishlist-id]');
         if (!btn) return;
         e.preventDefault();
 

@@ -402,6 +402,122 @@ function selectPayment(el, method) {
         msg.style.display = 'block';
     }
 })();
+
+// ── Points Redemption Handler ──
+(function() {
+    const applyBtn    = document.getElementById('applyPointsBtn');
+    const input       = document.getElementById('redeemPointsInput');
+    const hidden      = document.getElementById('redeemPointsHidden');
+    const msg         = document.getElementById('pointsMsg');
+    const totalEl     = document.getElementById('displayTotal');
+    const subtotalEl  = document.getElementById('displaySubtotal');
+    const CSRF        = document.querySelector('meta[name=csrf-token]')?.content || '';
+
+    if (!applyBtn) return;
+
+    let appliedDiscount = 0;
+
+    function getSubtotal() {
+        return parseInt((subtotalEl?.textContent || '0').replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function getCouponDiscount() {
+        const discAmt = document.getElementById('discountAmount');
+        const discRow = document.getElementById('discountRow');
+        if (discRow && discRow.style.display !== 'none' && discAmt) {
+            return parseInt(discAmt.textContent.replace(/[^0-9]/g, '')) || 0;
+        }
+        return 0;
+    }
+
+    function recalcTotal() {
+        const total = Math.max(0, getSubtotal() - getCouponDiscount() - appliedDiscount);
+        if (totalEl) totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+    }
+
+    function showPointsRow(display) {
+        let row = document.getElementById('pointsDiscountRow');
+        if (!row) {
+            const discountRow = document.getElementById('discountRow');
+            row = document.createElement('div');
+            row.id = 'pointsDiscountRow';
+            row.className = 'd-flex justify-content-between';
+            row.style.cssText = 'color:#059669;font-size:.88rem;margin-bottom:4px;';
+            row.innerHTML = '<span>Diskon Poin</span><span id="pointsDiscountAmt"></span>';
+            if (discountRow) {
+                discountRow.parentNode.insertBefore(row, discountRow.nextSibling);
+            } else if (totalEl) {
+                totalEl.closest('.d-flex').parentNode.insertBefore(row, totalEl.closest('.d-flex'));
+            }
+        }
+        row.style.display = 'flex';
+        const amtEl = document.getElementById('pointsDiscountAmt');
+        if (amtEl) amtEl.textContent = '- ' + display;
+    }
+
+    applyBtn.addEventListener('click', function() {
+        const points = parseInt(input.value);
+        if (!points || points < 1) {
+            showMsg('Masukkan jumlah poin yang ingin ditukar.', 'error');
+            return;
+        }
+
+        applyBtn.disabled = true;
+        applyBtn.textContent = '...';
+
+        fetch('{{ route("points.calculate") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            body: JSON.stringify({ points })
+        })
+        .then(r => r.json())
+        .then(data => {
+            applyBtn.disabled = false;
+            if (data.points > 0) {
+                appliedDiscount  = data.rupiah;
+                hidden.value     = data.points;
+                input.value      = data.points;
+                input.readOnly   = true;
+
+                showMsg('✓ ' + data.points + ' poin = ' + data.display + ' diskon', 'success');
+                showPointsRow(data.display);
+                recalcTotal();
+
+                applyBtn.textContent      = '✓ Diterapkan';
+                applyBtn.style.background = '#064e3b';
+            } else {
+                showMsg('Poin tidak cukup atau tidak valid.', 'error');
+                applyBtn.textContent = 'Tukar';
+            }
+        })
+        .catch(() => {
+            applyBtn.disabled    = false;
+            applyBtn.textContent = 'Tukar';
+            showMsg('Terjadi kesalahan. Coba lagi.', 'error');
+        });
+    });
+
+    // Reset jika user ubah input
+    input.addEventListener('input', function() {
+        if (input.readOnly) return;
+        if (appliedDiscount > 0) {
+            appliedDiscount  = 0;
+            hidden.value     = 0;
+            const row = document.getElementById('pointsDiscountRow');
+            if (row) row.style.display = 'none';
+            recalcTotal();
+            applyBtn.textContent      = 'Tukar';
+            applyBtn.style.background = '#059669';
+            msg.style.display         = 'none';
+        }
+    });
+
+    function showMsg(text, type) {
+        msg.textContent   = text;
+        msg.style.color   = type === 'success' ? '#059669' : '#dc2626';
+        msg.style.display = 'block';
+    }
+})();
 </script>
 
 @endsection
