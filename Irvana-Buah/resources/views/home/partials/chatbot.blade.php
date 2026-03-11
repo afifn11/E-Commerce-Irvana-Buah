@@ -1,6 +1,6 @@
 <style>
 .chatbot-fab {
-    position: fixed; bottom: 100px; right: 24px; z-index: 9989;
+    position: fixed; bottom: 94px; right: 24px; z-index: 9986;
     width: 56px; height: 56px; border-radius: 50%;
     background: linear-gradient(135deg,#0a4db8,#3b72e0);
     border: none; cursor: pointer; color: #fff; font-size: 1.3rem;
@@ -17,7 +17,7 @@
     border: 2px solid #fff; display: flex; align-items: center; justify-content: center;
 }
 .chatbot-window {
-    position: fixed; bottom: 170px; right: 24px; z-index: 9988;
+    position: fixed; bottom: 164px; right: 24px; z-index: 9987;
     width: min(360px, calc(100vw - 32px)); max-height: min(540px, calc(100vh - 200px));
     background: #fff; border-radius: 20px;
     box-shadow: 0 16px 48px rgba(0,0,0,.18);
@@ -84,7 +84,10 @@
 @keyframes cbDot { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
 @keyframes cbEntrance { from{transform:scale(0) rotate(-180deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
 @keyframes cbSpin { to { transform: rotate(360deg); } }
-@media (max-width:480px) { .chatbot-window { width: calc(100vw - 32px); right: 16px; bottom: 160px; } }
+@media (max-width: 767px) {
+    .chatbot-fab { bottom: 82px; right: 16px; width: 50px; height: 50px; font-size: 1.1rem; }
+    .chatbot-window { width: calc(100vw - 24px); right: 12px; bottom: 144px; max-height: calc(100vh - 180px); }
+}
 </style>
 
 <button class="chatbot-fab" id="chatbotFab" aria-label="Bantuan">

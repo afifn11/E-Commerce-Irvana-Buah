@@ -9,12 +9,12 @@
 .wa-float {
     position: fixed;
     bottom: 28px; right: 24px;
-    z-index: 9990;
-    width: 58px; height: 58px;
+    z-index: 9985;
+    width: 54px; height: 54px;
     background: #25d366;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 1.6rem;
+    color: #fff; font-size: 1.5rem;
     box-shadow: 0 6px 24px rgba(37,211,102,.4);
     text-decoration: none;
     transition: transform .25s, box-shadow .25s;
@@ -61,7 +61,7 @@
 }
 
 /* Offset from back-to-top button if present */
-@media (max-width: 575px) {
-    .wa-float { bottom: 80px; right: 16px; width: 50px; height: 50px; font-size: 1.35rem; }
+@media (max-width: 767px) {
+    .wa-float { bottom: 20px; right: 16px; width: 50px; height: 50px; font-size: 1.35rem; }
 }
 </style>
