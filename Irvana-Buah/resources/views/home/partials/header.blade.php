@@ -151,8 +151,8 @@
     <div class="collapse" id="mobileSearch">
       <div class="container">
         <form class="search-form" action="{{ route('products') }}" method="GET">
-          <div class="input-group">
-            <input type="text" class="form-control" name="search" placeholder="Cari buah segar...">
+          <div class="input-group" style="position:relative;">
+            <input type="text" id="mobileSearchInput" class="form-control" name="search" placeholder="Cari buah segar..." autocomplete="off">
             <button class="btn" type="submit">
               <i class="bi bi-search"></i>
             </button>

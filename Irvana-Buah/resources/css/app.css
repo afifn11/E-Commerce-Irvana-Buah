@@ -377,11 +377,18 @@ textarea.form-control { resize:vertical; }
 .search-input:focus { background: var(--glass-bg-hover); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
 
 /* ── PAGINATION ── */
-.pagination-wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--glass-border); }
+.pagination-wrap { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--glass-border); }
 .pagination-info { font-size: 0.8rem; color: var(--text-muted); }
 .pagination-nav a, .pagination-nav span { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); font-size: 0.82rem; border: 1px solid var(--glass-border); color: var(--text-secondary); text-decoration: none; transition: var(--transition-fast); margin: 0 1px; }
 .pagination-nav a:hover { background: var(--glass-bg-hover); color: var(--text-primary); border-color: var(--glass-border-strong); }
 .pagination-nav .active { background: var(--accent-dim); color: var(--accent); border-color: rgba(62,207,207,0.25); }
+/* Admin pagination-wrap uses custom.blade.php which generates nav > ul > li */
+.pagination-wrap nav { display: flex; justify-content: center; }
+.pagination-wrap ul { display: flex; list-style: none; margin: 0; padding: 0; gap: 3px; flex-wrap: wrap; justify-content: center; }
+.pagination-wrap ul li a, .pagination-wrap ul li span { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 8px; border-radius: var(--radius-sm); font-size: 0.82rem; border: 1px solid var(--glass-border); color: var(--text-secondary); text-decoration: none; transition: var(--transition-fast); }
+.pagination-wrap ul li a:hover { background: var(--glass-bg-hover); color: var(--text-primary); border-color: var(--glass-border-strong); }
+.pagination-wrap ul li a.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(62,207,207,0.25); font-weight: 600; }
+.pagination-wrap ul li.ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; color: var(--text-muted); font-size: 0.82rem; }
 
 /* ── AUTH LAYOUT ── */
 .auth-page { min-height: 100vh; background: var(--bg-base); display: flex; align-items: center; justify-content: center; padding: 1.5rem; position: relative; overflow: hidden; }
