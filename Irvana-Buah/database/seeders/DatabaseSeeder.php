@@ -13,17 +13,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat admin & user test
-        User::factory()->create([
-            'name'  => 'Admin',
-            'email' => 'admin@irvanabuah.com',
-            'role'  => 'admin',
+        User::create([
+            'name'              => 'Admin',
+            'email'             => 'admin@irvanabuah.com',
+            'password'          => bcrypt('admin123'),
+            'role'              => 'admin',
+            'email_verified_at' => now(),
         ]);
 
-        User::factory()->create([
-            'name'  => 'Test User',
-            'email' => 'test@example.com',
-            'role'  => 'customer',
+        User::create([
+            'name'              => 'Test User',
+            'email'             => 'test@example.com',
+            'password'          => bcrypt('user123'),
+            'role'              => 'customer',
+            'email_verified_at' => now(),
         ]);
 
         // Seed kategori & produk buah
