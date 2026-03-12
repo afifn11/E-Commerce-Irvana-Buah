@@ -38,24 +38,6 @@ class DashboardController extends Controller
     }
 
     /**
-     * Debug method untuk cek data dashboard
-     */
-    public function debugDashboard()
-    {
-        $data = $this->getDashboardData();
-        
-        // Debug untuk cek data
-        dd([
-            'totalRevenue' => $data['totalRevenue'],
-            'revenueHariIni' => $data['revenueHariIni'],
-            'revenueMingguIni' => $data['revenueMingguIni'],
-            'revenueBulanIni' => $data['revenueBulanIni'],
-            'topProducts' => $data['topProducts'],
-            'recentOrders' => $data['recentOrders']
-        ]);
-    }
-
-    /**
      * Get comprehensive dashboard data
      */
     private function getDashboardData()

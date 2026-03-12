@@ -12,7 +12,10 @@ class NgrokSkipWarning
     {
         $response = $next($request);
 
-        $response->headers->set('ngrok-skip-browser-warning', 'true');
+        // Hanya aktif di local/development dengan ngrok
+        if (! app()->isProduction()) {
+            $response->headers->set('ngrok-skip-browser-warning', 'true');
+        }
 
         return $response;
     }

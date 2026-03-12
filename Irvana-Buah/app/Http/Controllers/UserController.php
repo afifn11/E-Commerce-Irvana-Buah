@@ -1,104 +1,67 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\DTO\UserDTO;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        private readonly UserService $userService,
+    ) {}
+
+    public function index(): View
     {
-        $users = User::orderBy('created_at', 'desc')->get();
-        
+        $users = User::latest()->get();
+
         return view('users.index', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         return view('users.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => ['required', Rule::in(['admin', 'user'])],
-            'phone_number' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-        ]);
+        $userData = UserDTO::fromStoreRequest($request);
+        $this->userService->createUser($userData);
 
-        $data['password'] = Hash::make($data['password']);
-        
-        User::create($data);
-
-        return redirect()->route('users.index')
-            ->with('success', 'Pengguna berhasil ditambahkan!');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function show(User $user): View
     {
         return view('users.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         return view('users.edit', compact('user'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:6|confirmed',
-            'role' => ['required', Rule::in(['admin', 'user'])],
-            'phone_number' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-        ]);
+        $userData = UserDTO::fromUpdateRequest($request);
+        $this->userService->updateUser($user, $userData);
 
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
-        }
-
-        $user->update($data);
-
-        return redirect()->route('users.index')
-            ->with('success', 'Data pengguna berhasil diperbarui!');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
-        $user->delete();
+        $this->userService->deleteUser($user);
 
-        return redirect()->route('users.index')
-            ->with('success', 'Pengguna berhasil dihapus!');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Pengguna berhasil dihapus.');
     }
 }

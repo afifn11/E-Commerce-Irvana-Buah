@@ -84,7 +84,11 @@ Pertanyaan pengguna: {$userMessage}
 PROMPT;
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::withOptions([
+                'verify'          => app()->isProduction() ? true : false,
+                'timeout'         => 30,
+                'connect_timeout' => 10,
+            ])->withHeaders([
                 'Content-Type' => 'application/json',
             ])->timeout(25)->post(
                 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey,
