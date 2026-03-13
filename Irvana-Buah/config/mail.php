@@ -96,6 +96,10 @@ return [
             ],
             'retry_after' => 60,
         ],
+        
+        'brevo' => [
+            'transport' => 'brevo',
+        ],
 
     ],
 
@@ -111,8 +115,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info.irvanabuah@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'Irvana Buah'),
     ],
 
 ];
