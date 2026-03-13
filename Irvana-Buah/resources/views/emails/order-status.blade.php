@@ -5,95 +5,268 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Update Pesanan - Irvana Buah</title>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 16px;">
   <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
 
-      {{-- Header --}}
-      <tr><td style="background:linear-gradient(135deg,#0a4db8,#1e3a8a);border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:8px;">🍊</div>
-        <div style="color:#fff;font-size:1.4rem;font-weight:800;letter-spacing:-.5px;">Irvana Buah</div>
-        <div style="color:#a5c0f7;font-size:.85rem;margin-top:4px;">Update Status Pesanan</div>
-      </td></tr>
+      {{-- ═══ HERO HEADER dengan background buah ═══ --}}
+      <tr><td style="padding:0;position:relative;">
+        <div style="
+          background-image: url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&q=80');
+          background-size: cover;
+          background-position: center;
+          position: relative;
+          min-height: 220px;
+          display: block;
+        ">
+          {{-- Overlay gelap agar teks terbaca --}}
+          <div style="
+            background: linear-gradient(135deg, rgba(10,40,100,0.82) 0%, rgba(5,20,60,0.75) 100%);
+            padding: 44px 40px 36px;
+            text-align: center;
+            min-height: 220px;
+            box-sizing: border-box;
+          ">
+            {{-- Logo / Brand --}}
+            <div style="margin-bottom:20px;">
+              <div style="
+                display:inline-block;
+                background:rgba(255,255,255,0.15);
+                border:1.5px solid rgba(255,255,255,0.3);
+                border-radius:12px;
+                padding:8px 20px;
+              ">
+                <span style="color:#fff;font-size:1.1rem;font-weight:800;letter-spacing:1px;">IRVANA BUAH</span>
+              </div>
+            </div>
 
-      {{-- Status badge --}}
-      <tr><td style="background:#fff;padding:32px 40px 0;text-align:center;">
-        <div style="display:inline-block;background:{{ $statusColor }}1a;border:2px solid {{ $statusColor }};border-radius:999px;padding:10px 28px;color:{{ $statusColor }};font-weight:700;font-size:1rem;">
-          {{ $statusLabel }}
+            {{-- Judul --}}
+            <div style="color:#fff;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;line-height:1.2;">
+              Update Status Pesanan
+            </div>
+            <div style="color:rgba(200,220,255,0.85);font-size:0.88rem;letter-spacing:0.3px;">
+              Toko Buah Segar Online Terpercaya
+            </div>
+
+            {{-- Status Badge --}}
+            <div style="margin-top:24px;">
+              <span style="
+                display:inline-block;
+                background:{{ $statusColor }};
+                color:#fff;
+                font-weight:700;
+                font-size:0.95rem;
+                padding:10px 32px;
+                border-radius:999px;
+                letter-spacing:0.3px;
+                box-shadow:0 4px 16px rgba(0,0,0,0.25);
+              ">
+                {{ $statusLabel }}
+              </span>
+            </div>
+          </div>
         </div>
-        <p style="color:#475569;margin:16px 0 0;font-size:.95rem;line-height:1.6;">{{ $statusMessage }}</p>
       </td></tr>
 
-      {{-- Order info --}}
+      {{-- ═══ GREETING ═══ --}}
+      <tr><td style="background:#fff;padding:32px 40px 0;">
+        <p style="margin:0 0 8px;color:#94a3b8;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">Halo,</p>
+        <h2 style="margin:0 0 12px;color:#1e293b;font-size:1.25rem;font-weight:800;">{{ $order->user->name }}</h2>
+        <p style="margin:0;color:#475569;font-size:0.95rem;line-height:1.7;padding-bottom:24px;border-bottom:1px solid #f1f5f9;">
+          {{ $statusMessage }}
+        </p>
+      </td></tr>
+
+      {{-- ═══ ORDER INFO CARDS ═══ --}}
       <tr><td style="background:#fff;padding:24px 40px;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:12px;overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
           <tr>
-            <td style="padding:16px 20px;border-bottom:1px solid #e2e8f0;">
-              <span style="color:#94a3b8;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">No. Pesanan</span>
-              <div style="color:#1e293b;font-weight:700;font-size:1rem;margin-top:4px;">{{ $order->order_number }}</div>
+            <td width="50%" style="padding:18px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">No. Pesanan</div>
+              <div style="color:#1e293b;font-weight:800;font-size:1rem;font-family:monospace;">{{ $order->order_number }}</div>
             </td>
-            <td style="padding:16px 20px;border-bottom:1px solid #e2e8f0;border-left:1px solid #e2e8f0;">
-              <span style="color:#94a3b8;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Tanggal</span>
-              <div style="color:#1e293b;font-weight:600;font-size:.9rem;margin-top:4px;">{{ $order->created_at->format('d M Y') }}</div>
+            <td width="50%" style="padding:18px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;border-left:1px solid #e2e8f0;">
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Tanggal Pesan</div>
+              <div style="color:#1e293b;font-weight:600;font-size:0.9rem;">{{ $order->created_at->format('d M Y, H:i') }}</div>
             </td>
           </tr>
           <tr>
-            <td style="padding:16px 20px;">
-              <span style="color:#94a3b8;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Total</span>
-              <div style="color:#0a4db8;font-weight:800;font-size:1.1rem;margin-top:4px;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+            <td width="50%" style="padding:18px 20px;background:#fff;">
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Total Pembayaran</div>
+              <div style="color:#0a4db8;font-weight:800;font-size:1.15rem;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
             </td>
-            <td style="padding:16px 20px;border-left:1px solid #e2e8f0;">
-              <span style="color:#94a3b8;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Penerima</span>
-              <div style="color:#1e293b;font-weight:600;font-size:.9rem;margin-top:4px;">{{ $order->user->name }}</div>
+            <td width="50%" style="padding:18px 20px;background:#fff;border-left:1px solid #e2e8f0;">
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Status Terkini</div>
+              <div style="display:inline-block;background:{{ $statusColor }}18;color:{{ $statusColor }};font-weight:700;font-size:0.82rem;padding:4px 12px;border-radius:999px;border:1px solid {{ $statusColor }}40;">
+                {{ $statusLabel }}
+              </div>
             </td>
           </tr>
         </table>
       </td></tr>
 
-      {{-- Items --}}
+      {{-- ═══ ORDER ITEMS ═══ --}}
       <tr><td style="background:#fff;padding:0 40px 24px;">
-        <p style="color:#64748b;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px;">Item Pesanan</p>
-        @foreach($order->orderItems->take(4) as $item)
-        <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
-          <div style="flex:1;color:#1e293b;font-size:.9rem;font-weight:600;">{{ optional($item->product)->name ?? 'Produk' }}</div>
-          <div style="color:#64748b;font-size:.85rem;">{{ $item->quantity }}x &nbsp; Rp {{ number_format($item->price, 0, ',', '.') }}</div>
-        </div>
-        @endforeach
-        @if($order->orderItems->count() > 4)
-        <div style="color:#94a3b8;font-size:.82rem;padding-top:8px;">+{{ $order->orderItems->count() - 4 }} item lainnya</div>
-        @endif
+        <p style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 14px;">Ringkasan Pesanan</p>
+
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+          {{-- Header row --}}
+          <tr style="background:#f8fafc;">
+            <td style="padding:10px 16px;color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Produk</td>
+            <td style="padding:10px 16px;color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;text-align:center;">Qty</td>
+            <td style="padding:10px 16px;color:#64748b;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;text-align:right;">Harga</td>
+          </tr>
+
+          @foreach($order->orderItems->take(5) as $index => $item)
+          <tr style="background:{{ $index % 2 === 0 ? '#fff' : '#fafbfc' }};">
+            <td style="padding:12px 16px;color:#1e293b;font-size:0.88rem;font-weight:600;border-top:1px solid #f1f5f9;">
+              {{ optional($item->product)->name ?? 'Produk' }}
+            </td>
+            <td style="padding:12px 16px;color:#64748b;font-size:0.88rem;text-align:center;border-top:1px solid #f1f5f9;">
+              {{ $item->quantity }}
+            </td>
+            <td style="padding:12px 16px;color:#1e293b;font-size:0.88rem;font-weight:600;text-align:right;border-top:1px solid #f1f5f9;white-space:nowrap;">
+              Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
+            </td>
+          </tr>
+          @endforeach
+
+          @if($order->orderItems->count() > 5)
+          <tr style="background:#f8fafc;">
+            <td colspan="3" style="padding:10px 16px;color:#94a3b8;font-size:0.8rem;border-top:1px solid #f1f5f9;">
+              + {{ $order->orderItems->count() - 5 }} item lainnya
+            </td>
+          </tr>
+          @endif
+
+          {{-- Total row --}}
+          <tr style="background:#0a4db8;">
+            <td colspan="2" style="padding:14px 16px;color:rgba(255,255,255,0.85);font-size:0.82rem;font-weight:600;">Total Pembayaran</td>
+            <td style="padding:14px 16px;color:#fff;font-size:1rem;font-weight:800;text-align:right;white-space:nowrap;">
+              Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+            </td>
+          </tr>
+        </table>
       </td></tr>
 
-      {{-- CTA button --}}
-      <tr><td style="background:#fff;padding:8px 40px 32px;text-align:center;">
+      {{-- ═══ STATUS TIMELINE ═══ --}}
+      @php
+        $statuses = ['pending', 'processing', 'shipped', 'delivered'];
+        $statusLabels = ['Diterima', 'Diproses', 'Dikirim', 'Selesai'];
+        $statusVal = $order->status instanceof \BackedEnum ? $order->status->value : (string) $order->status;
+        $currentIndex = array_search($statusVal, $statuses);
+      @endphp
+      @if($statusVal !== 'cancelled')
+      <tr><td style="background:#fff;padding:0 40px 28px;">
+        <p style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 20px;">Tracking Pesanan</p>
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            @foreach($statuses as $i => $s)
+            @php $done = $currentIndex !== false && $i <= $currentIndex; @endphp
+            <td style="text-align:center;vertical-align:top;padding:0 4px;">
+              {{-- Circle --}}
+              <div style="
+                width:32px;height:32px;border-radius:50%;margin:0 auto 8px;
+                background:{{ $done ? '#0a4db8' : '#e2e8f0' }};
+                display:flex;align-items:center;justify-content:center;
+                line-height:32px;
+                font-size:0.75rem;font-weight:700;
+                color:{{ $done ? '#fff' : '#94a3b8' }};
+              ">{{ $i + 1 }}</div>
+              {{-- Label --}}
+              <div style="color:{{ $done ? '#1e293b' : '#94a3b8' }};font-size:0.72rem;font-weight:{{ $done ? '700' : '400' }};">
+                {{ $statusLabels[$i] }}
+              </div>
+            </td>
+            @if($i < count($statuses) - 1)
+            <td style="vertical-align:top;padding-top:15px;">
+              <div style="height:2px;background:{{ ($currentIndex !== false && $i < $currentIndex) ? '#0a4db8' : '#e2e8f0' }};"></div>
+            </td>
+            @endif
+            @endforeach
+          </tr>
+        </table>
+      </td></tr>
+      @endif
+
+      {{-- ═══ CTA BUTTON ═══ --}}
+      <tr><td style="background:#fff;padding:0 40px 36px;text-align:center;">
         <a href="{{ route('customer.orders.show', $order->id) }}"
-           style="display:inline-block;background:#0a4db8;color:#fff;text-decoration:none;padding:14px 36px;border-radius:999px;font-weight:700;font-size:.95rem;box-shadow:0 4px 16px rgba(10,77,184,.35);">
-          Lihat Detail Pesanan &rarr;
+           style="
+             display:inline-block;
+             background:linear-gradient(135deg,#0a4db8,#1d6fe8);
+             color:#fff;
+             text-decoration:none;
+             padding:15px 40px;
+             border-radius:999px;
+             font-weight:700;
+             font-size:0.95rem;
+             letter-spacing:0.2px;
+             box-shadow:0 6px 20px rgba(10,77,184,0.4);
+           ">
+          Lihat Detail Pesanan
         </a>
-        @if($order->status && (($order->status instanceof \BackedEnum ? $order->status->value : $order->status) === 'delivered'))
+
+        @if($statusVal === 'delivered')
         <div style="margin-top:16px;">
-          <p style="color:#64748b;font-size:.85rem;margin:0 0 10px;">Produk sudah sampai? Yuk beri ulasan!</p>
           <a href="{{ route('customer.orders.show', $order->id) }}"
-             style="display:inline-block;border:2px solid #0a4db8;color:#0a4db8;text-decoration:none;padding:10px 28px;border-radius:999px;font-weight:600;font-size:.85rem;">
-            ⭐ Tulis Ulasan
+             style="
+               display:inline-block;
+               border:2px solid #0a4db8;
+               color:#0a4db8;
+               text-decoration:none;
+               padding:11px 32px;
+               border-radius:999px;
+               font-weight:600;
+               font-size:0.88rem;
+             ">
+            Tulis Ulasan Produk
           </a>
         </div>
         @endif
       </td></tr>
 
-      {{-- Footer --}}
-      <tr><td style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
-        <p style="color:#94a3b8;font-size:.8rem;margin:0;">
-          Ada pertanyaan? Hubungi kami via
-          <a href="https://wa.me/6281234567890" style="color:#0a4db8;text-decoration:none;">WhatsApp</a>
-          atau balas email ini.<br>
-          &copy; {{ date('Y') }} Irvana Buah — Toko Buah Segar Online
+      {{-- ═══ DIVIDER dengan buah kecil ═══ --}}
+      <tr><td style="padding:0;">
+        <div style="
+          background-image: url('https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=1200&q=80');
+          background-size: cover;
+          background-position: center 60%;
+          height: 80px;
+          position: relative;
+        ">
+          <div style="background:linear-gradient(180deg, #fff 0%, rgba(10,40,100,0.6) 100%);height:80px;"></div>
+        </div>
+      </td></tr>
+
+      {{-- ═══ FOOTER ═══ --}}
+      <tr><td style="background:#0f172a;padding:28px 40px;text-align:center;border-radius:0 0 20px 20px;">
+        <div style="color:#fff;font-size:1rem;font-weight:800;letter-spacing:1px;margin-bottom:6px;">IRVANA BUAH</div>
+        <div style="color:#64748b;font-size:0.78rem;margin-bottom:16px;">Toko Buah Segar Online Terpercaya</div>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td align="center">
+              <a href="https://irvana-buah.up.railway.app" style="color:#60a5fa;text-decoration:none;font-size:0.8rem;margin:0 10px;">Website</a>
+              <span style="color:#334155;">|</span>
+              <a href="https://wa.me/6281234567890" style="color:#60a5fa;text-decoration:none;font-size:0.8rem;margin:0 10px;">WhatsApp</a>
+              <span style="color:#334155;">|</span>
+              <a href="mailto:info.irvanabuah@gmail.com" style="color:#60a5fa;text-decoration:none;font-size:0.8rem;margin:0 10px;">Email</a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="color:#334155;font-size:0.75rem;margin:16px 0 0;">
+          &copy; {{ date('Y') }} Irvana Buah. Semua hak dilindungi.<br>
+          Email ini dikirim otomatis, mohon tidak membalas email ini.
         </p>
       </td></tr>
 
     </table>
   </td></tr>
 </table>
+
 </body>
 </html>
